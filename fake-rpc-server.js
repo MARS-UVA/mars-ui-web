@@ -1,83 +1,88 @@
+const grpc = require("@grpc/grpc-js");
+var protoLoader = require("@grpc/proto-loader");
 
-/*
-class FakeRPCServer(jetsonrpc_pb2_grpc.JetsonRPC):
+const PROTO_PATH = "protos/jetsonrpc.proto";
+const SERVER_PORT = 50051;
+const options = {
+  keepCase: true,
+  longs: String,
+  enums: String,
+  defaults: true,
+  oneofs: true,
+};
 
-    # Receiving data:
-
-    def SendDDCommand(self, request, context):
-        print("received motor command request...")
-        # Copied from https://github.com/MARS-UVA/mars-ros/blob/master/src/rpc-server/src/grpc-server.cpp function SendMotorCmd
-        for cmd in request:
-            raw = cmd.values
-            motors = [-1]*8
-            motors[7] = (raw & 0b11) * 100
-            raw >>= 2
-            motors[6] = (raw & 0b111111) << 2
-            raw >>= 6
-            motors[5] = (raw & 0b111111) << 2
-            raw >>= 6
-            motors[4] = (raw & 0b111111) << 2
-            raw >>= 6
-            motors[3] = (raw & 0b111111) << 2
-            motors[2] = (raw & 0b111111) << 2
-            raw >>= 6
-            motors[1] = raw << 2
-            motors[0] = raw << 2
-
-            print("received motor command:", motors)
-
-        return jetsonrpc_pb2.Void()
-
-    # Sending data:
-
-    # def StreamIMU(self, request, context):
-    #     while True:
-    #         time.sleep(1.0/request.rate)
-    #         # 6 values: 3 for linear acc, 3 for angular acc
-    #         # random floats between 0 and 10
-    #         randoms = [random.random() * 10 for i in range(6)]
-    #         yield jetsonrpc_pb2.IMUData(values=randoms)
-    # def StreamImage(self, request, context):
-    #     cap = cv2.VideoCapture(0)
-    #     while(True):
-    #         time.sleep(1.0/request.rate)
-    #         ret, frame = cap.read()
-    #         ret, data = cv2.imencode(".jpg", frame)
-    #         yield jetsonrpc_pb2.Image(data=data.tobytes())
-
-    def StreamHeroFeedback(self, request, context):
-        while True:
-            time.sleep(1.0/request.rate)
-            currents = bytes([random.randint(0, 10) for i in range(11)]) # 11 motor currents
-            angleL = random.randint(0, 90) + 0.5
-            angleR = random.randint(0, 90) + 0.5
-            yield jetsonrpc_pb2.HeroFeedback(currents=currents, bucketLadderAngleL=angleL, bucketLadderAngleR=angleR, depositBinRaised=False, depositBinLowered=False)
-
-    def EmergencyStop(self, request, context):
-        print("fake_rpc_server received EMERGENCY STOP!")
-        return jetsonrpc_pb2.Void()
-
-    def ChangeDriveState(self, request, context):
-        state = request.dse
-        state_name = jetsonrpc_pb2.DriveStateEnum.keys()[state]
-        print("fake_rpc_server changing drive state to {} ({})".format(state, state_name))
-        return jetsonrpc_pb2.Void()
-
-    def StartAction(self, request, context):
-        print("fake_rpc_server starting action: {}".format(request.text))
-        return jetsonrpc_pb2.Void()
+var packageDefinition = protoLoader.loadSync(PROTO_PATH, options);
+const jetsonrpc = grpc.loadPackageDefinition(packageDefinition).jetsonrpc;
+const jetsonrpcService = jetsonrpc.JetsonRPC;
 
 
-def serve():
-    server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
-    jetsonrpc_pb2_grpc.add_JetsonRPCServicer_to_server(FakeRPCServer(), server)
-    server.add_insecure_port('[::]:50051')
-    server.start()
-    server.wait_for_termination()
+var server = new grpc.Server();
+server.addService(jetsonrpcService.service, {
 
-if __name__ == '__main__':
-    print("fake_rpc_server is currently running...")
-    logging.basicConfig()
-    serve()
-    
-*/
+  sendDdCommand: (call, callback) => {
+    call.on("data", (command) => {
+      var decoded = [...command.values];
+      console.log(`Got DD command: ${decoded}`);
+    });
+    call.on("end", (command) => {
+      callback(null, {}); // The first parameter in callback() indicates if there's an error. If there's no error, pass 'null'. 
+    });
+  },
+
+  changeDriveState: (call, callback) => {
+    var stateText = call.request.dse;
+    var stateNumber = jetsonrpc.DriveStateEnum.type.value.find(t => t.name == stateText).number;
+    console.log(`Changing drive state to ${stateText} (state number ${stateNumber})`);
+    return callback(null, {});
+  },
+
+  startAction: (call, callback) => {
+    var actionDescriptionText = call.request.text;
+    console.log(`Starting action: ${actionDescriptionText}`);
+    return callback(null, {});
+  },
+
+  emergencyStop: (call, callback) => {
+    console.log("Emergency stop!");
+    return callback(null, {});
+  },
+
+  streamHeroFeedback: (call) => {
+    setInterval(() => {
+      // TODO: what happens to this interval when streamHeroFeedback is called 
+      // repeatedly? This happens when the client wants to change the data transmission rate
+
+      currents = new Uint8Array(11);
+      for(var i = 0; i < currents.length; i++) {
+        currents[i] = Math.floor(Math.random() * 100);
+      }
+      angleL = Math.floor(Math.random() * 90) + 0.5;
+      angleR = Math.floor(Math.random() * 90) + 0.5;
+      var feedback = {
+        "currents": currents,
+        "bucketLadderAngleL": angleL,
+        "bucketLadderAngleR": angleR,
+        "depositBinRaised": 0,
+        "depositBinLowered": 1
+      };
+      call.write(feedback);
+    }, call.request.rate);
+
+    // call.end();
+  },
+
+});
+
+
+server.bindAsync(
+  `0.0.0.0:${SERVER_PORT}`,
+  grpc.ServerCredentials.createInsecure(),
+  (error, port) => {
+    if(error) {
+      console.log(`Error starting server: ${error}`);
+    } else {
+      console.log(`Server running at http://0.0.0.0:${port}`);
+      server.start();
+    }
+  }
+);

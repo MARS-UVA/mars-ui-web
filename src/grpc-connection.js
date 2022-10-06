@@ -7,8 +7,8 @@ Resources for setting up gRPC client connection:
 const grpc = require("@grpc/grpc-js");
 var protoLoader = require("@grpc/proto-loader");
 
-const PROTO_PATH = "../protos/jetsonrpc.proto";
-
+const PROTO_PATH = "protos/jetsonrpc.proto";
+const SERVER_PORT = 50051;
 const options = {
   keepCase: true,
   longs: String,
@@ -18,26 +18,19 @@ const options = {
 };
 
 var packageDefinition = protoLoader.loadSync(PROTO_PATH, options);
-const jetsonrpc = grpc.loadPackageDefinition(packageDefinition).jetsonrpc;
+const jetsonrpcService = grpc.loadPackageDefinition(packageDefinition).jetsonrpc;
 
-const stub = new jetsonrpc.JetsonRPC(
-  "localhost:50051",
+const stub = new jetsonrpcService.JetsonRPC(
+  `localhost:${SERVER_PORT}`,
   grpc.credentials.createInsecure()
 );
 
-// console.log(jetsonrpc)
-// console.log(jetsonrpc.DriveStateEnum.AUTONOMY)
-const t = jetsonrpc.DriveStateEnum.type.value[2].number;
-console.log(t);
-
+// var t = jetsonrpc.DriveStateEnum.type.value[2].number;
+var t = 2;
 stub.ChangeDriveState({"dse": t}, function(err, voidresponse) {
-    if(err) {
-        // console.log("got err=" + err);
-        console.log("got err: ");
-        console.log(err);
-    } else {
-        // console.log("got resp=" + voidresponse);
-        console.log("got resp: ");
-        console.log(voidresponse);
-    }
+  if(err) {
+    console.log("got err: ", err);
+  } else {
+    console.log("got resp: ", voidresponse);
+  }
 })

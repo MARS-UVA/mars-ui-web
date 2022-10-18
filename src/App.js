@@ -1,12 +1,19 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './App.css';
+import CameraPane from './Camera.js'
 
 function App() {
   return (
     <div className="App">
       <h1>MARS Web UI</h1>
-      <Tabs/>
+      <div className="flex-container">
+        <Tabs />
+        <div>
+          <CameraPane />
+          <CameraPane />
+        </div>
+      </div>
     </div>
   );
 }
@@ -32,12 +39,12 @@ class Tabs extends React.Component {
             className={activeTab === "graph" ? 'active' : ''}
             onClick={() => this.handleClick("graph")}>
             Graph
-            </li>
+          </li>
           <li
             className={activeTab === "actions" ? 'active' : ''}
             onClick={() => this.handleClick("actions")}>
-              Actions
-            </li>
+            Actions
+          </li>
         </ul>
         <div className='content'>
           {this.state.activeTab === "graph" ? <GraphsTab /> : <ActionTab />}
@@ -49,17 +56,17 @@ class Tabs extends React.Component {
 
 const GraphsTab = () => {
   return (
-      <div className ='GraphsTab'>
-          <p>Graphs Tab Content</p>
-      </div>
+    <div className='GraphsTab'>
+      <p>Graphs Tab Content</p>
+    </div>
   )
 }
 
 const ActionTab = () => {
   return (
-      <div className ='ActionTab'>
-          <p>Action Tab Content</p>
-      </div>
+    <div className='ActionTab'>
+      <p>Action Tab Content</p>
+    </div>
   )
 }
 

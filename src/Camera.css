@@ -1,0 +1,9 @@
+div.feed { 
+    /* figure out how to orient divs. maybe flexbox with tabs and 2 camerapanes inline?*/
+    /* display: inline-block; */
+    background-color:antiquewhite;
+    padding-left: 10px;
+    height: 200px;
+    border: solid;
+}
+

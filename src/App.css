@@ -1,7 +1,7 @@
 div.flex-container {
     display: flex;
     height: 800px;
-    justify-content: space-between;
+    justify-content: center;
 }
 
 div.content { 
@@ -31,3 +31,6 @@ ul.nav li.active {
     background: lightblue;
 }
 
+div.tabs {
+    margin-right: 200px;
+}

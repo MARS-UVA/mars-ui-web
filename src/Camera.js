@@ -6,30 +6,37 @@ class CameraPane extends React.Component {
       super(props);
       this.state = {
         rate: 0,
+        temprate: 0, // saves user input before "Set Rate" button is pressed
         status: 'on',
       }
     }
     handleClick = () => { // when toggle camera feed button is clicked
-        console.log(this.state.status);
         this.setState({status: this.state.status === 'on'? 'off' : 'on'})
     }
     handleChange = (event) => { // change in camera rate input
-        this.setState({rate: event.target.value}); 
+        this.setState({temprate: event.target.value}); 
+    }
+    confirmRate = () => {
+        this.setState({rate: this.state.temprate})
+        console.log("rate: ", this.state.temprate)
     }
     render() {
         return (
-            <div>
+            <div className = 'pane'>
                 <div className='feed'>
                     <CameraFeed status = {this.state.status} type={this.props.cameraType}/>
                 </div>
-                <div className='inputField'>
-                    <button className='cameraToggle' onClick={this.handleClick}>
+                <div>
+                    <button onClick={this.handleClick}>
                         Toggle Camera Feed
                     </button>
                     <label>
                         Camera Rate: 
-                        <input type="text" size = "4" value={this.state.rate} onChange={this.handleChange}/>
+                        <input type="text" size = "4" value={this.state.temprate} onChange={this.handleChange}/>
                     </label>
+                    <button onClick ={this.confirmRate}>
+                        Set Rate
+                    </button>
                 </div>
             </div>
         );
@@ -41,10 +48,14 @@ class CameraFeed extends React.Component {
         super(props);
     }
     render() {
+        
         return (
             <div>
                 <p>camera {this.props.type} feed image {this.props.status}</p>
-                <img src={require('./cameraimage.jpeg')} width='50px' height = '50px' alt=''/>
+                {this.props.status === 'on' && (
+                    <img src={require('./cameraimage.jpeg')} width='100px' height = '100px' alt=''/>
+                )} 
+                {/* only renders image when camera status is set to on */}
             </div>
         );
     }

@@ -27,11 +27,9 @@ class Tabs extends React.Component {
   }
   handleClick = (newTab) => {
     this.setState({ activeTab: newTab });
-    console.log("clicked", newTab);
   }
   render() {
     const activeTab = this.state.activeTab;
-    console.log(activeTab)
     return (
       <div className='tabs'>
         <ul className='nav'>

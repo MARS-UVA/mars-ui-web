@@ -7,3 +7,16 @@ div.feed {
     border: solid;
 }
 
+button.cameraToggle {
+    font-family: Arial, Helvetica, sans-serif;
+    background-color: #33b249;
+    font-size: 14px;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    margin-right: 2px;
+}
+
+label {
+    font-weight: bold;
+}

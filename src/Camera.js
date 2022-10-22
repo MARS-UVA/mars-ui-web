@@ -10,6 +10,7 @@ class CameraPane extends React.Component {
       }
     }
     handleClick = () => { // when toggle camera feed button is clicked
+        console.log(this.state.status);
         this.setState({status: this.state.status === 'on'? 'off' : 'on'})
     }
     handleChange = (event) => { // change in camera rate input
@@ -21,8 +22,8 @@ class CameraPane extends React.Component {
                 <div className='feed'>
                     <CameraFeed status = {this.state.status} type={this.props.cameraType}/>
                 </div>
-                <div className='buttons'>
-                    <button onClick={() => this.handleClick}>
+                <div className='inputField'>
+                    <button className='cameraToggle' onClick={this.handleClick}>
                         Toggle Camera Feed
                     </button>
                     <label>
@@ -42,7 +43,7 @@ class CameraFeed extends React.Component {
     render() {
         return (
             <div>
-                <p>camera {this.props.type} feed image</p>
+                <p>camera {this.props.type} feed image {this.props.status}</p>
                 <img src={require('./cameraimage.jpeg')} width='50px' height = '50px' alt=''/>
             </div>
         );

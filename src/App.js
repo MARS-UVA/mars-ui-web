@@ -1,5 +1,5 @@
 import React from 'react';
-import ReactDOM from 'react-dom/client';
+// import ReactDOM from 'react-dom/client';
 import './App.css';
 import CameraPane from './Camera.js'
 
@@ -10,8 +10,8 @@ function App() {
       <div className="flex-container">
         <Tabs />
         <div>
-          <CameraPane />
-          <CameraPane />
+          <CameraPane cameraType='1'/>
+          <CameraPane cameraType='2'/>
         </div>
       </div>
     </div>

@@ -7,20 +7,19 @@ class CameraPane extends React.Component {
       this.state = {
         rate: 0,
         status: 'on',
-        cameraType: 1,
       }
     }
     handleClick = () => { // when toggle camera feed button is clicked
-
+        this.setState({status: this.state.status === 'on'? 'off' : 'on'})
     }
-    handleChange = () => { // change in camera rate input
-
+    handleChange = (event) => { // change in camera rate input
+        this.setState({rate: event.target.value}); 
     }
     render() {
         return (
             <div>
                 <div className='feed'>
-                    <CameraFeed status = {this.state.status} type={this.state.cameraType}/>
+                    <CameraFeed status = {this.state.status} type={this.props.cameraType}/>
                 </div>
                 <div className='buttons'>
                     <button onClick={() => this.handleClick}>
@@ -42,7 +41,10 @@ class CameraFeed extends React.Component {
     }
     render() {
         return (
-           <p>camera feed image</p>
+            <div>
+                <p>camera {this.props.type} feed image</p>
+                <img src={require('./cameraimage.jpeg')} width='50px' height = '50px' alt=''/>
+            </div>
         );
     }
 }

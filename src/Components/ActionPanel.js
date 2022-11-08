@@ -1,9 +1,15 @@
-import React from 'react'
+import React from "react";
+import ActionButton from './ActionButton'
+import Grid from '@mui/material/Grid';
 
 export default function ActionPanel(){
 
     return(
-    <div>
-        <p>Action Content</p>
-    </div>);
+    <Grid container spacing={2}>
+        <ActionButton label={"Raise Bucket Ladder"}/>
+        <ActionButton label={"Lower Bucket Ladder"}/>
+        <ActionButton label={"Raise Deposit Bin"}/>
+        <ActionButton label={"Lower Deposit Bin"}/>
+        <ActionButton label={"Dig"}/>
+    </Grid>);
 }

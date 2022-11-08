@@ -1,9 +1,11 @@
-import * as React from 'react';
-import TabList from '@mui/lab/TabList';
+import React, { useState } from "react";
 import Tab from '@mui/material/Tab';
 import Tabs from '@mui/material/Tabs';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
+
+import ActionPanel from './ActionPanel'
+import GraphPanel from './GraphPanel'
 
 export default function TabContainer(){
 
@@ -43,10 +45,10 @@ export default function TabContainer(){
                 <Tab value="action" label="Actions"/>
             </Tabs>
             <TabPanel value={tabValue} index="graph">
-                Graph Content
+                <GraphPanel/>
             </TabPanel>
             <TabPanel value={tabValue} index="action">
-                Action Content
+                <ActionPanel/>
             </TabPanel>
         </div>
     );

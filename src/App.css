@@ -1,6 +1,12 @@
+div.flex-container {
+    display: flex;
+    height: 800px;
+    justify-content: space-between;
+}
+
 div.content { 
-    display: inline-block;
-    width: 50%;
+    /* display: inline-block; */
+    width: 400px;
     height: 400px;
     border: solid;
     margin-top: 0px;

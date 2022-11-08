@@ -1,20 +1,27 @@
 import React from 'react';
-import ReactDOM from 'react-dom/client';
+// import ReactDOM from 'react-dom/client';
 import './App.css';
 import Typography from '@mui/material/Typography';
+import Grid from '@mui/material/Grid';
 
 import TabContainer from './Components/TabContainer'
-
+import CameraPane from './Components/Camera.js'
 
 function App() {
   return (
     <div className="App">
       <Typography variant="h2">MARS Web UI</Typography>
-      <TabContainer/>
+      <br/>
+      <Grid container columnSpacing={3}>
+        <Grid item>
+          <CameraPane cameraType='1'/>
+          <br/>
+          <CameraPane cameraType='2'/>
+        </Grid>
+        <Grid item><TabContainer/></Grid>
+      </Grid>
     </div>
   );
 }
-
-
 
 export default App;

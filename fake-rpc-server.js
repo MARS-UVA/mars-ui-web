@@ -1,7 +1,7 @@
 const grpc = require("@grpc/grpc-js");
 var protoLoader = require("@grpc/proto-loader");
 
-const PROTO_PATH = "protos/jetsonrpc.proto";
+const PROTO_PATH = "./src/jetsonrpc.proto";
 const SERVER_PORT = 50051;
 const options = {
   keepCase: true,

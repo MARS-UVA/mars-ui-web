@@ -1,12 +1,38 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import ReactDOM from 'react-dom/client';
 import './App.css';
+import {dummyHeroValues, stub} from "./grpc-connection";
 
 function App() {
+
+  var heroValues = [];
+
+  const getValues = () => {
+    let call = stub.streamHeroFeedback({rate: 1000});
+
+    // let call = stub.StreamHeroFeedback({rate: 1000});
+
+    call.on('data', function(herofeedback){
+      heroValues = herofeedback;
+      console.log(herofeedback);
+      console.log(heroValues);
+    });
+
+    
+    call.on('end', function(){
+      console.log('Hero feedback done streaming.');
+    });
+
+  }
+
+  useEffect(() => {
+    getValues();
+  });
+
   return (
     <div className="App">
       <h1>MARS Web UI</h1>
-      <Tabs/>
+      
     </div>
   );
 }

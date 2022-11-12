@@ -6,6 +6,7 @@ import App from './App';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
+  //if there are issues caused by sending GRPC commands twice (etc), remove strict mode
   <React.StrictMode>
     <App />
   </React.StrictMode>

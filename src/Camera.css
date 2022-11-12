@@ -1,0 +1,14 @@
+div.feed { 
+    background-color:antiquewhite;
+    padding-left: 10px;
+    height: 200px;
+    border: solid;
+}
+
+buttonStyle {
+    margin: 5px;
+}
+
+label {
+    font-weight: bold;
+}

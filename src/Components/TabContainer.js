@@ -23,9 +23,7 @@ export default function TabContainer(){
         const { children, value, index} = props;
       
         return (
-          <div
-            hidden={value !== index}
-          >
+          <div hidden={value !== index}>
             {value === index && (
               <Box sx={{ p: 3 }}>
                 <Typography>{children}</Typography>
@@ -36,11 +34,8 @@ export default function TabContainer(){
     }
 
     return(
-        <div>
-            <Tabs
-                value={tabValue}
-                onChange={handleTabSwitch}
-            >
+        <div style={{padding: "20px"}}>
+            <Tabs value={tabValue} onChange={handleTabSwitch}>
                 <Tab value="graph" label="Graphs"/>
                 <Tab value="action" label="Actions"/>
             </Tabs>

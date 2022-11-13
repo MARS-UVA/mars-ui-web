@@ -21,7 +21,7 @@ function App() {
           <br/>
           <CameraPane cameraType='2'/>
         </Grid>
-        <Grid item><TabContainer/></Grid>
+        <TabContainer/>
       </Grid>
     </div>
   );

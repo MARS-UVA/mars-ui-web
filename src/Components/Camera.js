@@ -1,5 +1,5 @@
 import React from 'react';
-import '../Camera.css';
+import './Camera.css';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import Grid from '@mui/material/Grid';

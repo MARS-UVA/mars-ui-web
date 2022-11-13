@@ -2,8 +2,8 @@ import React, { useState, useEffect } from "react";
 import ToggleButton from '@mui/material/ToggleButton';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import Typography from '@mui/material/Typography';
-import Grid from '@mui/material/Grid';
 import Button from '@mui/material/Button';
+import {proxyRequest} from "../proxyConnection";
 
 export default function ButtonPanel() {
 
@@ -17,14 +17,16 @@ export default function ButtonPanel() {
 
   //hook that activates on state change
   useEffect(()=>{
-    console.log("Drive Mode: "+driveMode)
+    console.log("Drive Mode: " + driveMode);
+    let n = 0;
     if(driveMode == "idle"){
-        console.log("idle"); //TODO: REPLACE ME WITH GRPC
+      n = 0;
     }else if(driveMode == "dd"){
-        console.log("dd"); //TODO: REPLACE ME WITH GRPC
+      n = 1;
     }else if(driveMode == "autonomy"){
-        console.log("auto"); //TODO: REPLACE ME WITH GRPC
+      n = 2;
     }
+    proxyRequest("/ChangeDriveState", {"dse": n});
   },[driveMode])
 
 

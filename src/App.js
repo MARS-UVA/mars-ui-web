@@ -5,7 +5,7 @@ import Typography from '@mui/material/Typography';
 import Grid from '@mui/material/Grid';
 
 import TabContainer from './Components/TabContainer'
-import CameraPane from './Components/Camera.js'
+import CameraPane from './Components/CameraPane.js'
 import ButtonPanel from './Components/ButtonPanel';
 
 function App() {

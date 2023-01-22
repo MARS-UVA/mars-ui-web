@@ -1,7 +1,10 @@
 # Web-Based MARS-UI
 
+## Component Map
+![image](https://user-images.githubusercontent.com/47730411/213934394-021b2c68-7480-42ff-a2e3-8f96591e2ac9.png)
+![image](https://user-images.githubusercontent.com/47730411/213934400-5c73b3a3-a1d9-4e89-9e71-0584eb417cb2.png)
 
-Notes on GRPC Intro (https://grpc.io/docs/what-is-grpc/introduction/):
+### Notes on GRPC Intro (https://grpc.io/docs/what-is-grpc/introduction/):
 
 GRPC is used to communicate between the server (the robot codebase in C++) and the client (the webui written in Node JS).
 

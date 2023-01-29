@@ -9,6 +9,7 @@ import CameraPane from './Components/CameraPane.js'
 import ButtonPanel from './Components/ButtonPanel';
 import StatusPanel from './Components/StatusPanel';
 var conn="Disconnected";
+import * as ROSLIB from 'roslib';
 
 function isConnected(){
   document.write(conn);
@@ -16,6 +17,25 @@ function isConnected(){
   return conn
 }
 function App() {
+
+  console.log("testing!");
+
+  var ros = new ROSLIB.Ros({
+    url : 'ws://localhost:9090'
+  });
+
+  ros.on('connection', function() {
+    console.log('Connected to websocket server.');
+  });
+
+  ros.on('error', function(error) {
+    console.log('Error connecting to websocket server: ', error);
+  });
+
+  ros.on('close', function() {
+    console.log('Connection to websocket server closed.');
+  });
+
   return (
     <div className="App">
       <Typography variant="h2">MARS Web UI</Typography>

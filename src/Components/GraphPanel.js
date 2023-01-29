@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import MCurrentGraph from "./Graph";
 import Checkbox from '@mui/material/Checkbox';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Grid from '@mui/material/Grid';
@@ -41,6 +42,8 @@ export default function GraphPanel(){
 
     return(
     <div>
+        <MCurrentGraph />
+        {/* insert current graphs here */}
         <Grid container>
             <FormControlLabel control={ <Checkbox
                 checked={dataCollection}

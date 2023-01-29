@@ -7,6 +7,7 @@ import Grid from '@mui/material/Grid';
 import TabContainer from './Components/TabContainer'
 import CameraPane from './Components/CameraPane.js'
 import ButtonPanel from './Components/ButtonPanel';
+import TextEdit from './Components/TextEdit.js'
 
 function App() {
   return (

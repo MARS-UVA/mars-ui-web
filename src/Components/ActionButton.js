@@ -17,7 +17,6 @@ export default function ActionButton({label}){
     return(
         <Grid container item columnSpacing={2}>
             <Grid item xs={3}><Button fullWidth variant="contained" onClick={()=>handleClick()}>{label}</Button></Grid>
-            <Grid item xs={1}><Button variant="outlined" onClick={()=>handleEdit()}>Edit</Button></Grid>
         </Grid>
     );
 }

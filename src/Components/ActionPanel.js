@@ -1,6 +1,7 @@
 import React from "react";
 import ActionButton from './ActionButton'
 import Grid from '@mui/material/Grid';
+import TextEdit from './TextEdit.js'
 
 export default function ActionPanel(){
 
@@ -11,5 +12,7 @@ export default function ActionPanel(){
         <ActionButton label={"Raise Deposit Bin"}/>
         <ActionButton label={"Lower Deposit Bin"}/>
         <ActionButton label={"Dig"}/>
+        <br/><br/>
+        <TextEdit/>
     </Grid>);
 }

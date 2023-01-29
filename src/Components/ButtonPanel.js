@@ -4,6 +4,8 @@ import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import Typography from '@mui/material/Typography';
 import Grid from '@mui/material/Grid';
 import Button from '@mui/material/Button';
+import {talker} from '../ros-setup';
+import * as ROSLIB from 'roslib';
 
 export default function ButtonPanel() {
 
@@ -18,6 +20,8 @@ export default function ButtonPanel() {
   //hook that activates on state change
   useEffect(()=>{
     console.log("Drive Mode: "+driveMode)
+    var message = new ROSLIB.Message({data: "drive mode is now: " + driveMode});
+    talker.publish(message);
     if(driveMode == "idle"){
         console.log("idle"); //TODO: REPLACE ME WITH GRPC
     }else if(driveMode == "dd"){

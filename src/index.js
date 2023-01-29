@@ -5,10 +5,13 @@ import App from './App';
 // import reportWebVitals from './reportWebVitals';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
+const handler = (event) => {
+  this.props.App.handleKeyPress(event);
+}
 root.render(
   //if there are issues caused by sending GRPC commands twice (etc), remove strict mode
   <React.StrictMode>
-    <App />
+    <App onKeyDown={handler}/>
   </React.StrictMode>
 );
 

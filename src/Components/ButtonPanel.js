@@ -1,9 +1,18 @@
 import React, { useState, useEffect } from "react";
+import '../Button.css';
 import ToggleButton from '@mui/material/ToggleButton';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import Typography from '@mui/material/Typography';
 import Grid from '@mui/material/Grid';
 import Button from '@mui/material/Button';
+
+export const Change = (props, _mode) => {
+  if(_mode == "dd") props.changeDD();
+}
+
+export function handleESTOP(){
+  ButtonPanel.handleESTOP();
+}
 
 export default function ButtonPanel() {
 
@@ -11,8 +20,26 @@ export default function ButtonPanel() {
   const [driveMode, setDriveMode] = React.useState('idle');
 
   //onclick handler that updates state
+  const idle = (event) => {
+    setDriveMode("idle");
+    driveMode = "idle";
+  }
+
+  const dd = () => {
+    alert("HELLLLLLLO");
+    driveMode = "dd";
+    handleChange("dd");
+  }
+
+  const auto = (event) => {
+    setDriveMode("auto");
+  }
+
+
   const handleChange = (event, newDriveMode) => {
     setDriveMode(newDriveMode);
+    console.log(newDriveMode);
+    console.log("YEEEE");
   };
 
   //hook that activates on state change
@@ -34,7 +61,14 @@ export default function ButtonPanel() {
 
   return (
     <div>
-      <Typography variant="body2">Drive Mode:</Typography>
+      <Change changeDD={dd} />
+      <span class="b">
+        <Typography variant="body2">Drive Mode:</Typography>
+      </span>
+      <span class="b">
+        <Typography variant="body2">{driveMode}</Typography>
+      </span>
+      <br></br>
       <ToggleButtonGroup
         value={driveMode}
         exclusive
@@ -47,5 +81,6 @@ export default function ButtonPanel() {
 
       <Button sx={{ml:5}} variant="contained" size="large" color="error" onClick={()=>handleESTOP()}>ESTOP</Button>
     </div>
-  );
+  )
+
 }

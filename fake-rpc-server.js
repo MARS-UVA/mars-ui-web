@@ -15,6 +15,7 @@ var packageDefinition = protoLoader.loadSync(PROTO_PATH, options);
 const jetsonrpc = grpc.loadPackageDefinition(packageDefinition).jetsonrpc;
 const jetsonrpcService = jetsonrpc.JetsonRPC;
 
+// Client and server examples for client/server streaming rpcs: https://adityasridhar.com/posts/how-to-effectively-use-grpc-streams-in-nodejs
 
 var server = new grpc.Server();
 server.addService(jetsonrpcService.service, {
@@ -25,6 +26,7 @@ server.addService(jetsonrpcService.service, {
       console.log(`Got DD command: ${decoded}`);
     });
     call.on("end", (command) => {
+      // call.end();
       callback(null, {}); // The first parameter in callback() indicates if there's an error. If there's no error, pass 'null'. 
     });
   },

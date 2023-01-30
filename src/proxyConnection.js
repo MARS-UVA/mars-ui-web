@@ -1,6 +1,6 @@
 const proxyAddress = "http://localhost:50050"
 
-async function proxyRequest(url, data) {
+async function proxyRequest(url, data) { // ChangeDriveState, StartAction, EmergencyStop
   
   const fullUrl = proxyAddress + url;
   const options = {
@@ -19,4 +19,26 @@ async function proxyRequest(url, data) {
   }
 }
 
-export {proxyRequest};
+async function proxyStreamToRequest(url) { // SendDDCommand
+  // return WritableStream({
+  //   start(controller) {
+  
+  //   },
+  //   write(chunk, controller) {
+  
+  //   },
+  //   close(controller) {
+  
+  //   },
+  //   abort(reason) {
+  
+  //   }
+  // });
+}
+
+async function proxyRequestToStream(url, data) { // StreamHeroFeedback
+  // return http.request(url);
+}
+
+
+export { proxyRequest, proxyStreamToRequest, proxyRequestToStream };

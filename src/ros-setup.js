@@ -39,6 +39,38 @@ motorCommandPublisher.publish(message);
 export { motorCommandPublisher };
 
 
+// Subcribe to HERO board feedback
+// --------------------------------
+
+var heroMotorCurrents;
+var heroLadderAngle;
+var heroDepositBinRaised;
+
+var heroFeedbackSubscriber = new ROSLIB.Topic({
+  ros : ros,
+  name : '/motor/feedback',
+  messageType : 'hero_board/HeroFeedback'
+});
+
+// example usage
+/*
+heroFeedbackSubscriber.subscribe(function(message) {
+  heroMotorCurrents = message.currents;
+  heroDepositBinRaised = message.depositBinRaised;
+  heroLadderAngle = message.bucketLadderAngleR;
+
+  console.log('Ros setup received angle: ' 
+    + heroLadderAngle + "\ncurrents: " + heroMotorCurrents 
+    + "\nraised: " + heroDepositBinRaised);
+});
+*/
+
+// heroFeedbackSubscriber.unsubscribe();
+
+
+export { heroFeedbackSubscriber };
+
+
 // Set state service
 // ------------------
 

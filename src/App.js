@@ -11,7 +11,6 @@ import StatusPanel from './Components/StatusPanel';
 var conn="Disconnected";
 import DriveModeButtonPanel from './Components/DriveModeButtonPanel';
 import './ros-setup';
-import { motorCommandPublisher } from './ros-setup';
 import * as ROSLIB from 'roslib';
 
 function isConnected(){
@@ -20,9 +19,6 @@ function isConnected(){
   return conn
 }
 function App() {
-
-  var message = new ROSLIB.Message({values: [0, 1, 2, 3, 4, 5, 6, 7]});
-  motorCommandPublisher.publish(message);
 
   return (
     <div className="App">

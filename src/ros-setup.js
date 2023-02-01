@@ -16,9 +16,33 @@ ros.on('close', function() {
     console.log('Connection to websocket server closed.');
 });
 
-// Subscribing to a Topic
-// ----------------------
+// Set state service
+// ------------------
 
+
+// Get state service
+// ------------------
+
+
+// Publish motor commands
+// -----------------------
+
+var motorCommandPublisher = new ROSLIB.Topic({
+    ros : ros,
+    name : '/motor/output',
+    messageType : 'hero_board/MotorCommand'
+});
+
+var message = new ROSLIB.Message({values: [0, 1, 2, 3, 4, 5, 6, 7]});
+motorCommandPublisher.publish(message);
+
+export { motorCommandPublisher };
+
+
+// Start action service
+// ---------------------
+
+/*
 var listener = new ROSLIB.Topic({
     ros : ros,
     name : '/listener',
@@ -28,7 +52,7 @@ var listener = new ROSLIB.Topic({
 listener.subscribe(function(message) {
     console.log('Received message on ' + listener.name + ': ' + message.data);
     listener.unsubscribe();
-});
+}); */
 
 var talker = new ROSLIB.Topic({
     ros : ros,

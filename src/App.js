@@ -10,7 +10,7 @@ import ButtonPanel from './Components/ButtonPanel';
 import StatusPanel from './Components/StatusPanel';
 var conn="Disconnected";
 import './ros-setup';
-import { talker } from './ros-setup';
+import { motorCommandPublisher, talker } from './ros-setup';
 import * as ROSLIB from 'roslib';
 
 function isConnected(){
@@ -20,8 +20,8 @@ function isConnected(){
 }
 function App() {
 
-  var message = new ROSLIB.Message({data: "test publishing again!"});
-  talker.publish(message);
+  var message = new ROSLIB.Message({values: [0, 1, 2, 3, 4, 5, 6, 7]});
+  motorCommandPublisher.publish(message);
 
   return (
     <div className="App">

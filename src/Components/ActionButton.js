@@ -8,8 +8,21 @@ export default function ActionButton({label}){
 
     //activates on action button click
     function handleClick(){
-        // console.log("action") //TODO: REPLACEME WITH GRPC
+        // TODO: grab actual json from files once editing functionality is finished
+        var request = new ROSLIB.ServiceRequest({
+            action_description_json: "{ \
+                \"name\": \"raise_ladder\", \
+                \"update_delay\": 0.05, \
+                \"speed\": 50, \
+                \"raised_angle\": 52.0 \
+            }"
+        });
         
+        let json = JSON.parse(request.action_description_json)
+
+        startActionClient.callService(request, function(result) {
+            console.log('Start action service called with action: ' + json.name + '.');
+        });
     }
 
     //activates when edit button clicked

@@ -1,5 +1,9 @@
 import * as ROSLIB from 'roslib';
 
+
+// Set up ROS connection
+// ----------------------
+
 var ros = new ROSLIB.Ros({
     url : 'ws://localhost:9090'
 });
@@ -16,15 +20,8 @@ ros.on('close', function() {
     console.log('Connection to websocket server closed.');
 });
 
-// Set state service
-// ------------------
 
-
-// Get state service
-// ------------------
-
-
-// Publish motor commands - works!
+// Publish motor commands
 // -----------------------
 
 var motorCommandPublisher = new ROSLIB.Topic({
@@ -37,6 +34,44 @@ var message = new ROSLIB.Message({values: [0, 1, 2, 3, 4, 5, 6, 7]});
 motorCommandPublisher.publish(message);
 
 export { motorCommandPublisher };
+
+
+// Set state service
+// ------------------
+
+var setStateClient = new ROSLIB.Service({
+    ros : ros,
+    name : '/set_state',
+    serviceType : 'hero_board/SetState'
+  });
+
+  var request = new ROSLIB.ServiceRequest({
+    state: 0 // 0 corresponds to direct drive, 1 to autonomy, 2 to idle
+  }); 
+
+  setStateClient.callService(request, function(result) {
+    console.log('Set state service called with result ' + result + '.');
+  });
+
+export { setStateClient };
+
+
+// Get state service
+// ------------------
+
+var getStateClient = new ROSLIB.Service({
+    ros : ros,
+    name : '/get_state',
+    serviceType : 'hero_board/GetState'
+  });
+
+  var request = new ROSLIB.ServiceRequest({}); // the request has no fields
+
+  getStateClient.callService(request, function(result) {
+    console.log('Get state service called with result ' + result + '.');
+  });
+
+export { getStateClient };
 
 
 // Start action service
@@ -58,30 +93,7 @@ var startActionClient = new ROSLIB.Service({
   });
 
   startActionClient.callService(request, function(result) {
-    console.log('Service called with result ' + result + '.');
+    console.log('Start action service called with result ' + result + '.');
   });
 
 export { startActionClient };
-
-/*
-var listener = new ROSLIB.Topic({
-    ros : ros,
-    name : '/listener',
-    messageType : 'std_msgs/String'
-});
-
-listener.subscribe(function(message) {
-    console.log('Received message on ' + listener.name + ': ' + message.data);
-    listener.unsubscribe();
-}); */
-
-var talker = new ROSLIB.Topic({
-    ros : ros,
-    name : '/talker',
-    messageType : 'std_msgs/String'
-});
-
-var message = new ROSLIB.Message({data: "test publishing"});
-talker.publish(message);
-
-export { talker };

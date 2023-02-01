@@ -10,7 +10,7 @@ import ButtonPanel from './Components/ButtonPanel';
 import StatusPanel from './Components/StatusPanel';
 var conn="Disconnected";
 import './ros-setup';
-import { motorCommandPublisher, talker } from './ros-setup';
+import { motorCommandPublisher } from './ros-setup';
 import * as ROSLIB from 'roslib';
 
 function isConnected(){

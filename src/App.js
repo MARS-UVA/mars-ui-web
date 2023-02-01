@@ -9,6 +9,7 @@ import CameraPane from './Components/CameraPane.js'
 import ButtonPanel from './Components/ButtonPanel';
 import StatusPanel from './Components/StatusPanel';
 var conn="Disconnected";
+import DriveModeButtonPanel from './Components/DriveModeButtonPanel';
 import './ros-setup';
 import { motorCommandPublisher } from './ros-setup';
 import * as ROSLIB from 'roslib';
@@ -28,7 +29,7 @@ function App() {
       <Typography variant="h2">MARS Web UI</Typography>
       <StatusPanel/>
       <br/>
-      <ButtonPanel/>
+      <DriveModeButtonPanel/>
       <br/><br/>
       <Grid container columnSpacing={3}>
         <Grid item>

@@ -30,8 +30,11 @@ var motorCommandPublisher = new ROSLIB.Topic({
     messageType : 'hero_board/MotorCommand'
 });
 
+// example usage: 
+/*
 var message = new ROSLIB.Message({values: [0, 1, 2, 3, 4, 5, 6, 7]});
 motorCommandPublisher.publish(message);
+*/
 
 export { motorCommandPublisher };
 
@@ -45,13 +48,16 @@ var setStateClient = new ROSLIB.Service({
     serviceType : 'hero_board/SetState'
   });
 
+  // example usage:
+  /*
   var request = new ROSLIB.ServiceRequest({
     state: 0 // 0 corresponds to direct drive, 1 to autonomy, 2 to idle
   }); 
 
   setStateClient.callService(request, function(result) {
     console.log('Set state service called with result ' + result + '.');
-  });
+  }); 
+  */
 
 export { setStateClient };
 
@@ -65,11 +71,14 @@ var getStateClient = new ROSLIB.Service({
     serviceType : 'hero_board/GetState'
   });
 
+  // example usage:
+  /*
   var request = new ROSLIB.ServiceRequest({}); // the request has no fields
 
   getStateClient.callService(request, function(result) {
     console.log('Get state service called with result ' + result + '.');
   });
+  */
 
 export { getStateClient };
 
@@ -83,6 +92,8 @@ var startActionClient = new ROSLIB.Service({
     serviceType : 'actions/StartAction'
   });
 
+  // example usage:
+  /*
   var request = new ROSLIB.ServiceRequest({
     action_description_json: "{ \
         \"name\": \"raise_ladder\", \
@@ -95,5 +106,6 @@ var startActionClient = new ROSLIB.Service({
   startActionClient.callService(request, function(result) {
     console.log('Start action service called with result ' + result + '.');
   });
+  */
 
 export { startActionClient };

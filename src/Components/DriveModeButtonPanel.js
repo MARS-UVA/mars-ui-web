@@ -4,10 +4,11 @@ import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import Typography from '@mui/material/Typography';
 import Grid from '@mui/material/Grid';
 import Button from '@mui/material/Button';
-import {motorCommandPublisher} from '../ros-setup';
 import * as ROSLIB from 'roslib';
+import { registerResolver } from "@grpc/grpc-js/build/src/resolver";
+import { setStateClient } from '../ros-setup';
 
-export default function ButtonPanel() {
+export default function DriveModeButtonPanel() {
 
   //state for updating drive mode
   const [driveMode, setDriveMode] = React.useState('idle');
@@ -19,16 +20,25 @@ export default function ButtonPanel() {
 
   //hook that activates on state change
   useEffect(()=>{
-    console.log("Drive Mode: "+driveMode)
-    var message = new ROSLIB.Message({values: [0, 1, 2, 3, 4, 5, 6, 7]});
-    motorCommandPublisher.publish(message);
-    if(driveMode == "idle"){
-        console.log("idle"); //TODO: REPLACE ME WITH GRPC
-    }else if(driveMode == "dd"){
-        console.log("dd"); //TODO: REPLACE ME WITH GRPC
-    }else if(driveMode == "autonomy"){
-        console.log("auto"); //TODO: REPLACE ME WITH GRPC
+
+    var request = new ROSLIB.ServiceRequest({
+      state: 0 // 0 corresponds to direct drive, 1 to autonomy, 2 to idle
+    }); 
+    
+    if(driveMode == "dd") {
+      request.state = 0;
+    } else if(driveMode == "autonomy"){
+      request.state = 1;
+    } else if(driveMode == "idle"){
+      request.state = 2;
     }
+
+    if(driveMode != null) {
+      setStateClient.callService(request, function(result) {
+        console.log('Set state service called to change drive mode to ' + driveMode + '.');
+      });
+    }
+
   },[driveMode])
 
 

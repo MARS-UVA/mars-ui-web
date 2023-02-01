@@ -24,7 +24,7 @@ ros.on('close', function() {
 // ------------------
 
 
-// Publish motor commands
+// Publish motor commands - works!
 // -----------------------
 
 var motorCommandPublisher = new ROSLIB.Topic({
@@ -41,6 +41,27 @@ export { motorCommandPublisher };
 
 // Start action service
 // ---------------------
+
+var startActionClient = new ROSLIB.Service({
+    ros : ros,
+    name : '/start_action',
+    serviceType : 'actions/StartAction'
+  });
+
+  var request = new ROSLIB.ServiceRequest({
+    action_description_json: "{ \
+        \"name\": \"raise_ladder\", \
+        \"update_delay\": 0.05, \
+        \"speed\": 50, \
+        \"raised_angle\": 52.0 \
+    }"
+  });
+
+  startActionClient.callService(request, function(result) {
+    console.log('Service called with result ' + result + '.');
+  });
+
+export { startActionClient };
 
 /*
 var listener = new ROSLIB.Topic({

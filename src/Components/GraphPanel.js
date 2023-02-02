@@ -3,65 +3,77 @@ import Checkbox from '@mui/material/Checkbox';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Grid from '@mui/material/Grid';
 import { heroFeedbackSubscriber } from "../ros-setup";
+import HeroFeedbackPanel from './HeroFeedbackPanel';
 
 export default function GraphPanel(){
 
+    // State variables
+    // ---------------
+    // ensures that components will be redrawn when new values are received
+
     const [angle, setAngle] = useState(30);
     const [currents, setCurrents] = useState([0, 1, 2, 3, 4, 5, 6, 7, 8, 9]);
-   // const [todos, setTodos] = useState([{ text: 'Learn Hooks' }]);
+    const [binRaised, setBinRaised] = useState("false");
 
-    heroFeedbackSubscriber.subscribe(function(message) {
-        let heroMotorCurrents = message.currents;
-        let heroDepositBinRaised = message.depositBinRaised;
-        let heroLadderAngle = message.bucketLadderAngleR;
-      
-        console.log('Ros setup received angle: ' 
-          + heroLadderAngle + "\ncurrents: " + heroMotorCurrents 
-          + "\nraised: " + heroDepositBinRaised);
+    // Toggle data collection 
+    // -----------------------
 
-        setAngle(heroLadderAngle);
-        setCurrents(heroMotorCurrents);
-    });
-
-    // Variable for whether motor data collection is toggled
     const[dataCollection, setDataCollection] = useState(true);
 
-    // function that changes variable of whether data collection is toggled based on checkbox input
     const handleDataCollectionToggle = (event) => {
         setDataCollection(event.target.checked);
-        // DO NOT CALL BACKEND FUNCTION HERE (unless you want to write async code)
+        // calling a backend function here will call it asynchronously
     };
 
-    // Hook that activates on change of Data Collection State
+    // hook that activates on change of Data Collection State
     useEffect(()=>{
-        console.log("Motor Data Collection Status: "+dataCollection)
+        console.log("Motor Data Collection Status: "+ dataCollection)
         if(dataCollection){
-            console.log("enable") //TODO: REPLACE ME WITH GRPC
+            console.log("enable")
+            heroFeedbackSubscriber.subscribe(function(message) {
+                let heroMotorCurrents = message.currents;
+                let heroDepositBinRaised = message.depositBinRaised;
+                let heroLadderAngle = message.bucketLadderAngleR;
+              
+                console.log('Recieved motor values:' + heroMotorCurrents[0]);
+        
+                var motorCurrents = String.fromCharCode(heroMotorCurrents);
+        
+                setAngle(heroLadderAngle);
+                setCurrents(motorCurrents);
+                if (heroDepositBinRaised) {
+                    setBinRaised("true");
+                } else {
+                    setBinRaised("false");
+                }
+            });
         }else{
-            console.log("disable") //TODO: REPLACE ME WITH GRPC
+            console.log("disable")
+            heroFeedbackSubscriber.unsubscribe()
         }
     },[dataCollection])
 
-    //Variable for whether motor data collection is toggled
+    // Toggle displaying the data
+    // ---------------------------
+
     const[showData, setShowData] = useState(true);
 
-    //function that changes variable of whether data collection is toggled based on checkbox input
     const handleShowDataToggle = (event) => {
         setShowData(event.target.checked);
-        //DO NOT CALL GRPC FUNCTION HERE (unless you want to write async code)
     };
 
-    //Hook that activates on change of Data Collection State
-    useEffect(()=>{
-        console.log("Show Motor Value Status: "+showData)
-        if(showData){
-            // console.log(heroFeedbackValues) 
-            // motorFeedback = heroFeedbackValues;
-            // currents = [2, 4, 5, 6, 7, 8, 9, 1]
-        }else{
-            console.log("values not shown") //TODO: REPLACE ME WITH GRPC
-        }
-    },[showData])
+    let feedbackContent = <p></p>;
+    if (showData) {
+        feedbackContent = 
+        <HeroFeedbackPanel 
+            angle={angle} 
+            currents={currents} 
+            binRaised={binRaised}>
+        </HeroFeedbackPanel>;
+    }
+
+    // Build UI components
+    // --------------------
 
     return(
     <div>
@@ -80,8 +92,7 @@ export default function GraphPanel(){
             /> } label="Toggle Show Motor Values" />
         </Grid>
         <Grid container>
-            <p>Angle: {angle}</p>
-            <p>Currents:{currents}</p>
+            {feedbackContent}
         </Grid>
     </div>);
 }

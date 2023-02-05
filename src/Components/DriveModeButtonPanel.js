@@ -6,7 +6,7 @@ import Grid from '@mui/material/Grid';
 import Button from '@mui/material/Button';
 import * as ROSLIB from 'roslib';
 import { registerResolver } from "@grpc/grpc-js/build/src/resolver";
-import { setStateClient } from '../ros-setup';
+import { setStateClient, emergencyStopClient } from '../ros-setup';
 
 export default function DriveModeButtonPanel() {
 
@@ -43,7 +43,13 @@ export default function DriveModeButtonPanel() {
 
 
   function handleESTOP(){
-    console.log("STOP"); //TODO: REPLACE ME WITH GRPC
+    var request = new ROSLIB.ServiceRequest({
+      stop_signal: 1 
+    }); 
+  
+    emergencyStopClient.callService(request, function() {
+      console.log('E stop service called!');
+    }); 
   }
 
   return (

@@ -115,6 +115,29 @@ var getStateClient = new ROSLIB.Service({
 export { getStateClient };
 
 
+// Emergency stop service
+// -----------------------
+
+var emergencyStopClient = new ROSLIB.Service({
+  ros : ros,
+  name : '/emergency_stop',
+  serviceType : 'hero_board/EmergencyStop'
+});
+
+ // example usage:
+  /*
+  var request = new ROSLIB.ServiceRequest({
+    stop_signal: 1 // send a 1 to send the stop signal
+  }); 
+
+  emergencyStopClient.callService(request, function(result) {
+    console.log('E stop service called!');
+  }); 
+  */
+
+export { emergencyStopClient };
+
+
 // Start action service
 // ---------------------
 

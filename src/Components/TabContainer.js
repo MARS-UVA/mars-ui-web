@@ -4,7 +4,7 @@ import Tabs from '@mui/material/Tabs';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 
-import ActionPanel from './ActionPanel'
+import TextEdit from './TextEdit'
 import GraphPanel from './GraphPanel'
 
 export default function TabContainer(){
@@ -48,7 +48,7 @@ export default function TabContainer(){
                 <GraphPanel/>
             </TabPanel>
             <TabPanel value={tabValue} index="action">
-                <ActionPanel/>
+                <TextEdit/>
             </TabPanel>
         </div>
     );

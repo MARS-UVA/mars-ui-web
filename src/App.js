@@ -1,13 +1,30 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
+import { useGamepads } from 'react-gamepads';
 import './App.css';
 import Typography from '@mui/material/Typography';
 import Grid from '@mui/material/Grid';
 import TabContainer from './Components/TabContainer'
-import CameraPane from './Components/Camera.js'
+import CameraPane from './Components/CameraPane.js'
 import ButtonPanel from './Components/ButtonPanel';
 import { socket, SocketContext } from "./SocketClientContext.js";
 
 export default function App() {
+
+  const [gamepads, setGamepads] = useState({});
+  useGamepads(gamepads => setGamepads(gamepads));
+
+  var message1 = 'nothing is pressed';
+  var message2 = 'Axis';
+  gamepads[0].buttons.forEach((button, i) => {
+    if (button.pressed) {
+      // console.log("Button " + i + " is pressed");
+      message1 = "Button " + i + " is pressed";
+    }
+  });
+
+  gamepads[0].axes.forEach((axis, i) => {
+    message2 = "Axis " + i + ": " + axis;
+  });
 
   let val = useRef(1);
   useEffect(() => {
@@ -22,7 +39,7 @@ export default function App() {
   return (
     <SocketContext.Provider value={socket}>
       <div className="App">
-        {/* <Typography variant="h2">MARS Web UI</Typography> */}
+        <Typography variant="h2">MARS Web UI</Typography>
         <br/>
         <ButtonPanel/>
         <br/>
@@ -38,6 +55,10 @@ export default function App() {
           </Grid>
         </Grid>
       </div>
+
+      <div>{gamepads[0] ? message1 : ''}</div>
+      <div>{gamepads[0] ? message2 : ''}</div>
+
     </SocketContext.Provider>
   );
 }

@@ -1,11 +1,14 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import ToggleButton from '@mui/material/ToggleButton';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
-import {proxyRequest} from "../proxyConnection";
+// import { proxyRequest } from "../proxyConnection";
+import { SocketContext } from "../SocketClientContext";
 
 export default function ButtonPanel() {
+
+  const socket = useContext(SocketContext);
 
   //state for updating drive mode
   const [driveMode, setDriveMode] = useState("0");
@@ -13,12 +16,12 @@ export default function ButtonPanel() {
   //onclick handler that updates state
   const handleChange = (event, newDriveMode) => {
     setDriveMode(newDriveMode);
-    proxyRequest("/ChangeDriveState", {"dse": parseInt(newDriveMode)});
+    socket.emit("ChangeDriveState", {"dse": parseInt(newDriveMode)});
   };
 
 
   function handleESTOP(){
-    proxyRequest("/EmergencyStop", {});
+    socket.emit("EmergencyStop", {});
   }
 
   return (

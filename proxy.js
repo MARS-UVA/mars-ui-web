@@ -2,12 +2,13 @@
 Resources for setting up gRPC client connection:
 - https://grpc.io/docs/languages/node/basics/
 - https://daily.dev/blog/build-a-grpc-service-in-nodejs
-*/
-const PROXY_SERVER_PORT = 50050;
-const GRPC_SERVER_PORT = 50051;
 
+Good example of socket setup: https://www.valentinog.com/blog/socket-react/
+*/
+
+const networkConfig = require("./networkConfig");
 const grpc = require("@grpc/grpc-js");
-var protoLoader = require("@grpc/proto-loader");
+const protoLoader = require("@grpc/proto-loader");
 
 const PROTO_PATH = "protos/jetsonrpc.proto";
 const options = {
@@ -18,30 +19,93 @@ const options = {
   oneofs: true,
 };
 
-var packageDefinition = protoLoader.loadSync(PROTO_PATH, options);
+const packageDefinition = protoLoader.loadSync(PROTO_PATH, options);
 const jetsonrpcService = grpc.loadPackageDefinition(packageDefinition).jetsonrpc;
 
 const stub = new jetsonrpcService.JetsonRPC(
-  `localhost:${GRPC_SERVER_PORT}`,
+  `${networkConfig.GRPC_SERVER_ADDRESS}:${networkConfig.GRPC_SERVER_PORT}`,
   grpc.credentials.createInsecure()
 );
 
 
-var express = require('express');
-var cors = require('cors');
-var bodyParser = require('body-parser');
+const express = require('express');
+const http = require('http');
+const socketIo = require('socket.io');
 
-var app = express();
-app.use(bodyParser.urlencoded({extended: false}));
-app.use(bodyParser.json())
-app.use(cors());
+const app = express();
+const server = http.createServer(app);
+const io = socketIo(server, {
+  cors: { 
+    // see https://socket.io/docs/v4/handling-cors/
+    origin: `http://localhost:${networkConfig.WEBSITE_PORT}`
+  }
+});
 
 
+io.on("connection", (socket) => {
+  console.log("Client connected!");
+  
+  // TODO could have socket topic for errors (and/or status for text display)
+  
+  // TODO does this process do something wasteful? (ie starting the call when this connection starts)
+  const sendDdCommandCall = stub.sendDdCommand(function(err, response) {
+    if(err) {
+      console.error("  grpc error:", response);
+      // res.send(err);
+    } else {
+      console.log("  grpc closed successfully");
+      // res.end();
+    }
+  });
+
+  const streamHeroFeedbackCall = stub.streamHeroFeedback({"rate": 1000});
+  streamHeroFeedbackCall.on("data", (data) => {
+    socket.emit("StreamHeroFeedback", data);
+  })
+
+  socket.on("SendDDCommand", (data) => {
+    console.log("SendDDCommand:", data);
+    sendDdCommandCall.write(data);
+  });
+
+  socket.on("ChangeDriveState", (data) => {
+    console.log("ChangeDriveState:", data);
+    stub.ChangeDriveState(data, function(err, response) {
+      if(err) {
+        console.error("  grpc error:", response);
+      }
+    });
+  });
+
+  socket.on("StartAction", (data) => {
+    console.log("StartAction:", data);
+    stub.StartAction(data, function(err, response) {
+      if(err) {
+        console.error("  grpc error:", response);
+      }
+    });
+  });
+
+  socket.on("EmergencyStop", () => {
+    console.log("EmergencyStop");
+    stub.EmergencyStop({}, function(err, response) {
+      if(err) {
+        console.error("  grpc err:", err);
+      }
+    });
+  });
+
+  socket.on("disconnect", () => {
+    console.log("Client disconnected!");
+  });
+});
+
+
+/*
 app.get("/", (req, res) => {
   console.log("/");
   res.send("Hello world!");
 });
-
 
 app.post("/SendDDCommand", (req, res) => {
   console.log("/SendDDCommand");
@@ -50,7 +114,7 @@ app.post("/SendDDCommand", (req, res) => {
       console.error("  grpc error:", response);
       // res.send(err);
     } else {
-      console.error("  grpc closed successfully");
+      console.log("  grpc closed successfully");
       // res.end();
     }
   });
@@ -110,12 +174,10 @@ app.post("/StreamHeroFeedback", (req, res) => {
   }
   res.end();
 });
+*/
 
 
-
-var server = app.listen(PROXY_SERVER_PORT, function () {
-  var host = server.address().address
-  var port = server.address().port
-  
-  console.log("mars-ui-web proxy server listening at http://%s:%s", host, port)
-})
+// app.listen(PROXY_SERVER_PORT, () => {
+//   console.log("mars-ui-web proxy server listening on port %s", PROXY_SERVER_PORT)
+// })
+server.listen(networkConfig.PROXY_SERVER_PORT, () => console.log(`Listening on port ${networkConfig.PROXY_SERVER_PORT}`));

@@ -1,12 +1,19 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import Checkbox from '@mui/material/Checkbox';
 import FormControlLabel from '@mui/material/FormControlLabel';
-import Grid from '@mui/material/Grid';
+import { SocketContext } from "../SocketClientContext";
 
 export default function GraphPanel(){
 
     //Variable for whether motor data collection is toggled
-    const[dataCollection, setDataCollection] = useState(true);
+    const [dataCollection, setDataCollection] = useState(true);
+    const [feedbackData, setFeedbackData] = useState(null);
+
+    const socket = useContext(SocketContext);
+    socket.on("StreamHeroFeedback", (data) => {
+        setFeedbackData(data);
+    });
+
     //function that changes variable of whether data collection is toggled based on checkbox input
     const handleDataCollectionToggle = (event) => {
         setDataCollection(event.target.checked);
@@ -38,22 +45,25 @@ export default function GraphPanel(){
             console.log("disable") //TODO: REPLACE ME WITH GRPC
         }
     },[showData])
-
+    
     return(
     <div>
-        <Grid container>
-            <FormControlLabel control={ <Checkbox
-                checked={dataCollection}
-                onChange={handleDataCollectionToggle}
-                inputProps={{ 'aria-label': 'controlled' }}
-            /> } label="Toggle Motor Data Collection" />
-        </Grid>
-        <Grid container>
-            <FormControlLabel control={ <Checkbox
-                checked={showData}
-                onChange={handleShowDataToggle}
-                inputProps={{ 'aria-label': 'controlled' }}
-            /> } label="Toggle Show Motor Values" />
-        </Grid>
+        {feedbackData != null ? 
+            <code>{JSON.stringify(feedbackData, null, 2)}</code>
+            : <h3>No feedback data</h3>
+        }
+
+        <br/>
+        <FormControlLabel control={ <Checkbox
+            checked={dataCollection}
+            onChange={handleDataCollectionToggle}
+            inputProps={{ 'aria-label': 'controlled' }}
+        /> } label="Toggle Motor Data Collection" />
+        <br/>
+        <FormControlLabel control={ <Checkbox
+            checked={showData}
+            onChange={handleShowDataToggle}
+            inputProps={{ 'aria-label': 'controlled' }}
+        /> } label="Toggle Show Motor Values" />
     </div>);
 }

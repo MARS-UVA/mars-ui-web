@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react";
 import Checkbox from '@mui/material/Checkbox';
 import FormControlLabel from '@mui/material/FormControlLabel';
+import Deque from 'collections/deque';
 
-import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend } from 'chart.js';
+import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Legend } from 'chart.js';
 import { Line } from 'react-chartjs-2';
 
 
@@ -46,6 +47,20 @@ export default function GraphPanel(){
         }
     }, [showData])
 
+    let chartReference = {};
+    let graphData = new Deque([1, 2, 3, 0, 5, 6, 7, 8]); // https://www.collectionsjs.com/deque
+
+    useEffect(() => {
+        const timer = setInterval(() => {
+            graphData.shift();
+            graphData.push(Math.floor(Math.random() * 10));
+            chartReference.data.datasets[0].data = graphData.toArray();
+
+            chartReference.update("none");
+        }, 500); 
+        return () => clearInterval(timer);
+    })
+
 
     // https://react-chartjs-2.js.org/examples/line-chart/
     ChartJS.register(
@@ -53,8 +68,6 @@ export default function GraphPanel(){
         LinearScale,
         PointElement,
         LineElement,
-        Title,
-        Tooltip,
         Legend
     );
 
@@ -68,7 +81,7 @@ export default function GraphPanel(){
         },
     };
 
-    const labels = ['January', 'February', 'March', 'April', 'May', 'June', 'July'];
+    const labels = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August'];
     const data = {
         labels,
         datasets: [
@@ -90,7 +103,7 @@ export default function GraphPanel(){
 
     return(
         <div>
-            <Line options={options} data={data} />
+            <Line options={options} data={data} ref={(ref) => chartReference = ref}/>
 
             <FormControlLabel control={ <Checkbox
                 checked={dataCollection}

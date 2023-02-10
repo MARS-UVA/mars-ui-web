@@ -11,9 +11,11 @@ export default function GraphPanel(){
     // ---------------
     // ensures that components will be redrawn when new values are received
 
-    const [angle, setAngle] = useState(30);
+    const [leftAngle, setLeftAngle] = useState(30);
+    const [rightAngle, setRightAngle] = useState(30);
     const [currents, setCurrents] = useState([0, 1, 2, 3, 4, 5, 6, 3, 8, 9]);
     const [binRaised, setBinRaised] = useState("false");
+    const [binLowered, setBinLowered] = useState("false");
 
     // Toggle data collection 
     // -----------------------
@@ -33,7 +35,9 @@ export default function GraphPanel(){
             heroFeedbackSubscriber.subscribe(function(message) {
                 let heroMotorCurrents = message.currents;
                 let heroDepositBinRaised = message.depositBinRaised;
-                let heroLadderAngle = message.bucketLadderAngleR;
+                let heroDepositBinLowered = message.depositBinLowered;
+                let heroLadderAngleR = message.bucketLadderAngleR;
+                let heroLadderAngleL = message.bucketLadderAngleL;
 
                 // if we need to do conversion on heroMotorCurrents, we can do that here
                 // let motorCurrents = heroMotorCurrents;
@@ -56,12 +60,18 @@ export default function GraphPanel(){
                 // console.log("array: " + arr);
                 console.log("decoded values: " + motorCurrents);
         
-                setAngle(heroLadderAngle);
+                setLeftAngle(heroLadderAngleL);
+                setRightAngle(heroLadderAngleR);
                 setCurrents(motorCurrents);
                 if (heroDepositBinRaised) {
                     setBinRaised("true");
                 } else {
                     setBinRaised("false");
+                }
+                if (heroDepositBinLowered) {
+                    setBinLowered("true");
+                } else {
+                    setBinLowered("false");
                 }
             });
         }else{
@@ -83,9 +93,12 @@ export default function GraphPanel(){
     if (showData) {
         feedbackContent = 
         <HeroFeedbackPanel 
-            angle={angle} 
+            leftAngle={leftAngle} 
+            rightAngle={rightAngle}
             currents={currents} 
-            binRaised={binRaised}>
+            binRaised={binRaised}
+            binLowered={binLowered}
+            >
         </HeroFeedbackPanel>;
     }
 

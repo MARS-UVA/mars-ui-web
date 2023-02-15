@@ -7,6 +7,11 @@ import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement
 import { Line } from 'react-chartjs-2';
 
 
+function transpose(matrix) {
+    // https://stackoverflow.com/a/46805290
+    return matrix[0].map((col, i) => matrix.map(row => row[i]));
+}
+
 export default function GraphPanel(){
 
     //Variable for whether motor data collection is toggled
@@ -47,17 +52,33 @@ export default function GraphPanel(){
         }
     }, [showData])
 
-    let chartReference = {};
-    let graphData = new Deque([1, 2, 3, 0, 5, 6, 7, 8]); // https://www.collectionsjs.com/deque
+    const numDataPoints = 20;
+    let chartReference = null;
+    // https://www.collectionsjs.com/deque
+    let graphData = new Deque( [...Array(numDataPoints)].map((_, i) => [i, i+1]) ); // fill deque with 2D array of fake data to start
+    let graphDataTransposed = null;
 
     useEffect(() => {
         const timer = setInterval(() => {
-            graphData.shift();
-            graphData.push(Math.floor(Math.random() * 10));
-            chartReference.data.datasets[0].data = graphData.toArray();
+            if(chartReference === null) {
+                return;
+            }
 
+            graphData.shift();
+            let nd = [Math.floor(Math.random() * 80) + 10, Math.floor(Math.random() * 25)];
+            graphData.push(nd);
+            graphDataTransposed = transpose(graphData.toArray()); // TODO transposing an array is expensive. Maybe it's fine in this case
+                // because it happens rarely, but one way to avoid this might be to directly modify the arrays stored in chartReference.data.datasets[i]
+                // instead of storing the data separately
+
+            // https://www.chartjs.org/docs/latest/developers/updates.html
+            graphDataTransposed.forEach((series, i) => {
+                chartReference.data.datasets[i].data = series;
+            });
             chartReference.update("none");
-        }, 500); 
+
+            // console.log(graphDataTransposed);
+        }, 1500);
         return () => clearInterval(timer);
     })
 
@@ -73,27 +94,29 @@ export default function GraphPanel(){
 
     const options = {
         responsive: true,
-        plugins: {
-            title: {
-                display: true,
-                text: 'Chart.js Line Chart',
-            },
+        scales: {
+            y:
+                {
+                    min: 0,
+                    max: 100,
+                    stepSize: 1,
+                },
+            x: {},
         },
     };
-
-    const labels = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August'];
+    const labels = [...Array(numDataPoints)].map((_, i) => ""); // set labels to empty strings but could be indices, timestamps, etc
     const data = {
         labels,
         datasets: [
             {
-                label: 'Dataset 1',
-                data: labels.map((_, i) => i+2),
+                label: 'Motor 1',
+                // data: labels.map((_, i) => i+2),
                 borderColor: 'rgb(255, 99, 132)',
                 backgroundColor: 'rgba(255, 99, 132, 0.5)',
             },
             {
-                label: 'Dataset 2',
-                data: labels.map((_, i) => i*2),
+                label: 'Motor 2',
+                // data: labels.map((_, i) => i*2),
                 borderColor: 'rgb(53, 162, 235)',
                 backgroundColor: 'rgba(53, 162, 235, 0.5)',
             },

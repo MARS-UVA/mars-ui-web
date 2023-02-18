@@ -4,6 +4,13 @@ import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 
+function clamp(num, min, max) {
+  return num <= min 
+    ? min 
+    : num >= max 
+      ? max 
+      : num
+}
 
 function formatGamepadState(axes, buttons) {
   let rx = axes[3];
@@ -16,10 +23,12 @@ function formatGamepadState(axes, buttons) {
   let b1 = 100 + buttons[3].value*100 - buttons[0].value*100; // north=200, south=0 (deposit bin angle)
   let b2 = 100 + buttons[1].value*100 - buttons[2].value*100; // east=200, west=0 (conveyor belt on/off)
 
-  return [Math.floor((-ry+rx) * 100 + 100), // left stick mixed
-          Math.floor((-ry-rx) * 100 + 100), // left stick mixed
-          Math.floor( x * 100 + 100), // right stick x axis
-          Math.floor(-y * 100 + 100), // right stick y axis
+  // TODO: figure out a better solution for mixing the right stick. I think ideally it would involve figuring out the angle of the stick, then using sin/cos
+  // to get the components, then doing some calculation based off that?
+  return [clamp(Math.floor((-ry+rx) * 100 + 100), 0, 200), // right stick mixed
+          clamp(Math.floor((-ry-rx) * 100 + 100), 0, 200), // right stick mixed
+          Math.floor( x * 100 + 100), // left stick x axis
+          Math.floor(-y * 100 + 100), // left stick y axis
           Math.floor((-(lt + 1) + (rt + 1)) * 50 + 100), // left trigger is backwards (0), right is forwards (200)
           b1, 
           b2]

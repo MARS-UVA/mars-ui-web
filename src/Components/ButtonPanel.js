@@ -6,8 +6,23 @@ import Button from '@mui/material/Button';
 
 
 function formatGamepadState(axes, buttons) {
-  // TODO format gamepad values correctly (as expected by GRPC/ROS)
-  return [axes[0], axes[1], buttons[0].value, buttons[1].value];
+  let rx = axes[3];
+  let ry = axes[4];
+  let x = axes[0];
+  let y = axes[1];
+  let lt = axes[2];
+  let rt = axes[5];
+
+  let b1 = 100 + buttons[3].value*100 - buttons[0].value*100; // north=200, south=0 (deposit bin angle)
+  let b2 = 100 + buttons[1].value*100 - buttons[2].value*100; // east=200, west=0 (conveyor belt on/off)
+
+  return [Math.floor((-ry+rx) * 100 + 100), // left stick mixed
+          Math.floor((-ry-rx) * 100 + 100), // left stick mixed
+          Math.floor( x * 100 + 100), // right stick x axis
+          Math.floor(-y * 100 + 100), // right stick y axis
+          Math.floor((-(lt + 1) + (rt + 1)) * 50 + 100), // left trigger is backwards (0), right is forwards (200)
+          b1, 
+          b2]
 }
 
 function arraysEqual(a, b) {

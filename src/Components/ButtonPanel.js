@@ -1,35 +1,68 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import ToggleButton from '@mui/material/ToggleButton';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import Typography from '@mui/material/Typography';
-import Grid from '@mui/material/Grid';
 import Button from '@mui/material/Button';
+
+
+function formatGamepadState(axes, buttons) {
+  // TODO format gamepad values correctly (as expected by GRPC/ROS)
+  return [axes[0], axes[1], buttons[0].value, buttons[1].value];
+}
+
+function arraysEqual(a, b) {
+  for (let i = 0; i < a.length; ++i) {
+    if (a[i] !== b[i]) return false;
+  }
+  return true;
+}
 
 export default function ButtonPanel() {
 
-  //state for updating drive mode
-  const [driveMode, setDriveMode] = React.useState('idle');
+  const [driveMode, setDriveMode] = useState('idle');
+  const [gamepadConnectedText, setGamepadConnectedText] = useState("No gamepad connected!");
+  const gamepadState = useRef(null);
+  
+  // Inspired by https://dev.to/xtrp/a-complete-guide-to-the-html5-gamepad-api-2k
+  window.addEventListener("gamepadconnected", (e) => {
+    console.log(`Gamepad connected at index ${e.gamepad.index}: ${e.gamepad.id}, ${e.gamepad.axes.length} axes, ${e.gamepad.buttons.length} buttons.`);
+    setGamepadConnectedText(`Gamepad connected: ${e.gamepad.id}`);
+  });
+  window.addEventListener("gamepaddisconnected", (e) => {
+    setGamepadConnectedText("No gamepad connected!");
+  });
+  
+  useEffect(() => {
+    const timer = setInterval(() => {
+      if(driveMode !== "dd") { // TODO ideally, this interval would only run in direct drive mode, so this check wouldn't be needed
+        return;
+      }
+      const myGamepad = navigator.getGamepads()[0]; // use the first gamepad
+      if(!myGamepad) {
+        return;
+      }
 
-  //onclick handler that updates state
+      const newState = formatGamepadState(myGamepad.axes, myGamepad.buttons);
+      if(gamepadState.current == null || !arraysEqual(newState, gamepadState.current)) {
+        gamepadState.current = newState;
+        console.log("Gamepad state:", newState);
+        // TODO: REPLACE ME WITH GRPC
+      }
+    }, 200);
+
+    return () => clearInterval(timer);
+  }, [driveMode]);
+
   const handleChange = (event, newDriveMode) => {
     setDriveMode(newDriveMode);
   };
 
-  //hook that activates on state change
   useEffect(()=>{
-    console.log("Drive Mode: "+driveMode)
-    if(driveMode == "idle"){
-        console.log("idle"); //TODO: REPLACE ME WITH GRPC
-    }else if(driveMode == "dd"){
-        console.log("dd"); //TODO: REPLACE ME WITH GRPC
-    }else if(driveMode == "autonomy"){
-        console.log("auto"); //TODO: REPLACE ME WITH GRPC
-    }
-  },[driveMode])
-
+    console.log("Drive Mode: " + driveMode) //TODO: REPLACE ME WITH GRPC
+  }, [driveMode])
 
   function handleESTOP(){
-    console.log("STOP"); //TODO: REPLACE ME WITH GRPC
+    console.log("ESTOP"); //TODO: REPLACE ME WITH GRPC
   }
 
   return (
@@ -45,7 +78,9 @@ export default function ButtonPanel() {
         <ToggleButton value="autonomy">Autonomy</ToggleButton>
       </ToggleButtonGroup>
 
-      <Button sx={{ml:5}} variant="contained" size="large" color="error" onClick={()=>handleESTOP()}>ESTOP</Button>
+      <Button sx={{ml:5}} variant="contained" size="large" color="error" onClick={handleESTOP}>ESTOP</Button>
+      <br/>
+      <small>{gamepadConnectedText}</small>
     </div>
   );
 }

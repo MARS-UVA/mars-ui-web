@@ -36,6 +36,14 @@ function formatGamepadState(axes, buttons) {
           b2]
 }
 
+function encodeGamepadState(left_side_motors, right_side_motors, bucket_ladder_angle, bucket_ladder_extension, bucket_ladder_chain, deposit_bin_angle, conveyor) {
+  // copied exactly from Python UI file utils/protocol.py function encode_values(...)
+  return [
+      left_side_motors, right_side_motors, left_side_motors, right_side_motors, 
+      bucket_ladder_angle, bucket_ladder_extension, bucket_ladder_chain, deposit_bin_angle, conveyor
+  ];
+}
+
 function arraysEqual(a, b) {
   for (let i = 0; i < a.length; ++i) {
     if (a[i] !== b[i]) return false;
@@ -75,8 +83,9 @@ export default function ButtonPanel() {
       if(gamepadState.current == null || !arraysEqual(newState, gamepadState.current)) {
         gamepadState.current = newState;
         console.log("Gamepad state:", newState);
+        socket.emit("SendDDCommand", {"values": encodeGamepadState(...newState)});
       }
-    }, 200);
+    }, 100);
 
     return () => clearInterval(timer);
   }, [driveMode]);

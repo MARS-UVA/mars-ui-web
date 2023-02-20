@@ -164,3 +164,28 @@ var startActionClient = new ROSLIB.Service({
   */
 
 export { startActionClient };
+
+// Subcribe to video from robot
+// -----------------------------
+
+var videoSubscriber = new ROSLIB.Topic({
+  ros : ros,
+  name : '/usb_cam/image_raw/compressed',
+  messageType : 'sensor_msgs/CompressedImage'
+});
+
+// example usage
+/*
+heroFeedbackSubscriber.subscribe(function(message) {
+  heroMotorCurrents = message.currents;
+  heroDepositBinRaised = message.depositBinRaised;
+  heroLadderAngle = message.bucketLadderAngleR;
+
+  console.log('Ros setup received angle: ' 
+    + heroLadderAngle + "\ncurrents: " + heroMotorCurrents 
+    + "\nraised: " + heroDepositBinRaised);
+});
+*/
+
+// heroFeedbackSubscriber.unsubscribe();
+export { videoSubscriber };

@@ -7,7 +7,7 @@ class HeroFeedbackPanel extends React.Component {
     render() {
         return (
             <>
-                <div position="flex">
+                <div>
                     <h4>Bucket Ladder Angles</h4>
                     <p>Right: {this.props.rightAngle.toFixed(3)}</p>
                     <p>Left: {this.props.leftAngle.toFixed(3)}</p>
@@ -15,6 +15,7 @@ class HeroFeedbackPanel extends React.Component {
                     <p>Raised: {this.props.binRaised}</p>
                     <p>Lowered: {this.props.binLowered}</p>
                 </div>
+                <br></br>
                 <div>
                     <h4>Motor Currents</h4>
                     {this.props.currents.map((current, index) => (

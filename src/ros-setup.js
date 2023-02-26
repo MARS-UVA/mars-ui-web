@@ -174,18 +174,4 @@ var videoSubscriber = new ROSLIB.Topic({
   messageType : 'sensor_msgs/CompressedImage'
 });
 
-// example usage
-/*
-heroFeedbackSubscriber.subscribe(function(message) {
-  heroMotorCurrents = message.currents;
-  heroDepositBinRaised = message.depositBinRaised;
-  heroLadderAngle = message.bucketLadderAngleR;
-
-  console.log('Ros setup received angle: ' 
-    + heroLadderAngle + "\ncurrents: " + heroMotorCurrents 
-    + "\nraised: " + heroDepositBinRaised);
-});
-*/
-
-// heroFeedbackSubscriber.unsubscribe();
 export { videoSubscriber };

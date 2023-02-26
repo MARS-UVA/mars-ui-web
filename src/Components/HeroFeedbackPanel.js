@@ -4,7 +4,24 @@ import Grid from '@mui/material/Grid';
 import Checkbox from '@mui/material/Checkbox';
 
 class HeroFeedbackPanel extends React.Component {
-    
+
+    constructor(props) {
+      super(props);
+
+      this.state = {
+        checkboxStatuses : new Array(this.props.currents.length).fill(false),
+      }
+      
+    }
+
+    handleCheckboxChange = (arrayIndex) => {
+        const updatedCheckedState = this.state.checkboxStatuses.map((item, index) =>
+            index === arrayIndex ? !item : item
+        );
+
+        this.setState({checkboxStatuses: updatedCheckedState});
+    };
+
     render() {
         return (
             <Grid container>
@@ -21,13 +38,14 @@ class HeroFeedbackPanel extends React.Component {
                     <div>
                         <h4>Motor Currents</h4>
                         {this.props.currents.map((current, index) => (
+
                             <div>
                                 <FormControlLabel control={ <Checkbox
-                                    checked={true}
-                                    onChange={console.log("checked")}
+                                    checked={this.state.checkboxStatuses[index]}
+                                    onChange={() => this.handleCheckboxChange(index)}
                                     inputProps={{ 'aria-label': 'controlled' }}
                                 /> } label="" />
-                                Motor {index + 1}: {current.toFixed(3)}
+                                Motor {index + 1}: {(this.state.checkboxStatuses[index] ? current.toFixed(3) : "")}
                             </div>)
                         )}
                     </div>

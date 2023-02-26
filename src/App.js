@@ -30,8 +30,6 @@ function App() {
       <Grid container columnSpacing={3}>
         <Grid item>
           <CameraPane cameraType='1'/>
-          <br/>
-          <CameraPane cameraType='2'/>
         </Grid>
         <Grid item><TabContainer/></Grid>
       </Grid>

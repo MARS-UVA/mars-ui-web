@@ -2,7 +2,6 @@ import React from 'react';
 import '../Camera.css';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
-import Grid from '@mui/material/Grid';
 import { videoSubscriber } from "../ros-setup";
 
 class CameraPane extends React.Component {
@@ -13,17 +12,11 @@ class CameraPane extends React.Component {
       this.state = {
         rate: 0,
         status: 'on',
-        video: '',
       }
-
-      videoSubscriber.subscribe(function(message) {
-        // this.state.video = message.data; 
       
-        console.log("data format is: " + message.format);
-        console.log("The data received is: " + message.data);
-        this.setState({video: message.data});
-      });
     }
+
+
     handleClick = () => { // when toggle camera feed button is clicked
         console.log(this.state.status);
         this.setState({status: this.state.status === 'on'? 'off' : 'on'})
@@ -36,7 +29,6 @@ class CameraPane extends React.Component {
             <div>
                 <div className='feed'>
                     <CameraFeed status = {this.state.status} type={this.props.cameraType}/>
-                    <img>{this.state.video}</img>
                 </div>
                 <br/>
                
@@ -56,12 +48,24 @@ class CameraFeed extends React.Component {
 
     constructor(props) {
         super(props);
+        
+        this.state = {
+            video: 'test',
+        }
+        this.setUpSubscriber();
     }
+
+    setUpSubscriber = () => {
+        videoSubscriber.subscribe(message => {
+            this.setState({video: message.data});
+        }
+      );
+    }
+
     render() {
         return (
-            <div>
-                <p>camera {this.props.type} feed image {this.props.status}</p>
-                <img src={require('../Images/cameraimage.jpeg')} width='50px' height = '50px' alt=''/>
+            <div class = "image-container">
+            <img src={`data:image/jpeg;base64, ${this.state.video}`} alt = "camera feed" />
             </div>
         );
     }

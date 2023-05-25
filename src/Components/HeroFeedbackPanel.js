@@ -9,7 +9,7 @@ class HeroFeedbackPanel extends React.Component {
       super(props);
 
       this.state = {
-        checkboxStatuses : new Array(this.props.currents.length).fill(false),
+        checkboxStatuses : new Array(this.props.currents.length).fill(true),
       }
       
     }
@@ -26,7 +26,7 @@ class HeroFeedbackPanel extends React.Component {
         return (
             <Grid container>
                 <>
-                    <div>
+                    <div class = "image-container">
                         <h4>Bucket Ladder Angles</h4>
                         <p>Right: {this.props.rightAngle.toFixed(3)}</p>
                         <p>Left: {this.props.leftAngle.toFixed(3)}</p>

@@ -26,7 +26,7 @@ class CameraPane extends React.Component {
     }
     render() {
         return (
-            <div>
+            <div class = 'image-container'>
                 <div className='feed'>
                     <CameraFeed status = {this.state.status} type={this.props.cameraType}/>
                 </div>
@@ -61,11 +61,11 @@ class CameraFeed extends React.Component {
         }
       );
     }
-
+6
     render() {
         return (
             <div class = "image-container">
-            <img src={`data:image/jpeg;base64, ${this.state.video}`} alt = "camera feed" />
+                <img src={`data:image/jpeg;base64, ${this.state.video}`} alt = "camera feed" />
             </div>
         );
     }

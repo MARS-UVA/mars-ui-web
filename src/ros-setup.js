@@ -8,18 +8,24 @@ var ros = new ROSLIB.Ros({
     url : 'ws://localhost:9090'
 });
 
+var connectionStatus = "Disconnected.";
+
 ros.on('connection', function() {
-    console.log('Connected to websocket server.');
+    connectionStatus = 'Connected to websocket server.';
+    console.log(connectionStatus);
 });
 
 ros.on('error', function(error) {
-    console.log('Error connecting to websocket server: ', error);
+    connectionStatus = 'Error connecting to websocket server: ' + error;
+    console.log(connectionStatus);
 });
 
 ros.on('close', function() {
-    console.log('Connection to websocket server closed.');
+    connectionStatus = 'Connection to websocket server closed.';
+    console.log(connectionStatus);
 });
 
+export {connectionStatus};
 
 // Publish motor commands
 // -----------------------

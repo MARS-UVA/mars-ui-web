@@ -1,11 +1,13 @@
 import Typography from '@mui/material/Typography';
+import { connectionStatus } from '../ros-setup';
+
 export default function StatusPanel(props){
     //check connection here
-    var connection = "Disconnected";
+    var connection = connectionStatus;
 
     return (
         <div>
-        <Typography variant="h3">{connection}</Typography>
+        <Typography variant="p">{connection}</Typography>
         </div>
     )
 }

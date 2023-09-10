@@ -2,16 +2,21 @@ import React from 'react';
 import '../Camera.css';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
-import Grid from '@mui/material/Grid';
+import { videoSubscriber } from "../ros-setup";
 
 class CameraPane extends React.Component {
+
     constructor(props) {
       super(props);
+
       this.state = {
         rate: 0,
         status: 'on',
       }
+      
     }
+
+
     handleClick = () => { // when toggle camera feed button is clicked
         console.log(this.state.status);
         this.setState({status: this.state.status === 'on'? 'off' : 'on'})
@@ -21,7 +26,7 @@ class CameraPane extends React.Component {
     }
     render() {
         return (
-            <div>
+            <div class = 'image-container'>
                 <div className='feed'>
                     <CameraFeed status = {this.state.status} type={this.props.cameraType}/>
                 </div>
@@ -40,14 +45,27 @@ class CameraPane extends React.Component {
 }
 
 class CameraFeed extends React.Component {
+
     constructor(props) {
         super(props);
+        
+        this.state = {
+            video: 'test',
+        }
+        this.setUpSubscriber();
     }
+
+    setUpSubscriber = () => {
+        videoSubscriber.subscribe(message => {
+            this.setState({video: message.data});
+        }
+      );
+    }
+6
     render() {
         return (
-            <div>
-                <p>camera {this.props.type} feed image {this.props.status}</p>
-                <img src={require('../Images/cameraimage.jpeg')} width='50px' height = '50px' alt=''/>
+            <div class = "image-container">
+                <img src={`data:image/jpeg;base64, ${this.state.video}`} alt = "camera feed" />
             </div>
         );
     }

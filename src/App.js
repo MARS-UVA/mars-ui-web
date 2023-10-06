@@ -9,7 +9,7 @@ function App() {
 
   return (
     <div className="App">
-      <Typography variant="h2">MARS Web UI</Typography>
+      <Typography variant="h2">MARS Web UI 2</Typography>
       <br/>
       <DriveModeButtonPanel/>
     </div>

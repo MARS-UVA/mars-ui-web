@@ -115,7 +115,7 @@ export default function DriveModeButtonPanel() {
 
   return (
     <div>
-      <Typography variant="body2">Drive Mode:</Typography>
+      <Typography variant="body2">DriveMode:</Typography>
       <ToggleButtonGroup
         value={driveMode}
         exclusive

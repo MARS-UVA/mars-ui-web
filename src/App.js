@@ -8,8 +8,8 @@ import './ros-setup';
 function App() {
 
   return (
-    <div className="App">
-      <Typography variant="h2">MARS Web UI</Typography>
+    <div className="App"  style={{ marginLeft:'20px' }}>
+      <Typography variant="h2">MARSWebUI</Typography>
       <br/>
       <DriveModeButtonPanel/>
     </div>

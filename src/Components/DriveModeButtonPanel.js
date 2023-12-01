@@ -8,6 +8,8 @@ import * as ROSLIB from 'roslib';
 import { registerResolver } from "@grpc/grpc-js/build/src/resolver";
 import { setStateClient, emergencyStopClient, motorCommandPublisher } from '../ros-setup';
 
+//testing with comments
+
 function formatGamepadState(axes, buttons) {
   let rx = axes[3];
   let ry = axes[4];

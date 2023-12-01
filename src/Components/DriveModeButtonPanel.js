@@ -27,7 +27,7 @@ function formatGamepadState(axes, buttons) {
           b1, 
           b2]
 }
-
+//20231201
 function arraysEqual(a, b) {
   for (let i = 0; i < a.length; ++i) {
     if (a[i] !== b[i]) return false;

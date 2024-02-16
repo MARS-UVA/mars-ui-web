@@ -90,7 +90,7 @@ export default function DriveModeButtonPanel() {
       }
       const myGamepad = navigator.getGamepads()[0]; // use the first gamepad
       console.log(myGamepad);
-      for(let i = 0; i < navigator.getGamepad().length; i++){
+      for(let i = 0; i < navigator.getGamepads().length; i++){
         const gamePads = navigator.getGamepads()[i];
         console.log(gamePads);
       }

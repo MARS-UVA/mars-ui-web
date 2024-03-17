@@ -8,7 +8,6 @@ import * as ROSLIB from 'roslib';
 import { registerResolver } from "@grpc/grpc-js/build/src/resolver";
 import { setStateClient, emergencyStopClient, motorCommandPublisher } from '../ros-setup';
 
-//testing with comments
 
 function formatGamepadState(axes, buttons) {
   let rx = axes[3];
@@ -20,35 +19,34 @@ function formatGamepadState(axes, buttons) {
 
   let b1 = 100 + buttons[3].value*100 - buttons[0].value*100; // north=200, south=0 (deposit bin angle)
   let b2 = 100 + buttons[1].value*100 - buttons[2].value*100; // east=200, west=0 (conveyor belt on/off)
-  let a = Math.floor((-ry + rx) * 100 + 100); // left stick mixed
-  let b = Math.floor((-ry - rx) * 100 + 100); // left stick mixed
-  let c = Math.floor(x * 100 + 100); // right stick x axis
-  let d = Math.floor(-y * 100 + 100);// right stick y axis
-  let e = Math.floor((-(lt + 1) + (rt + 1)) * 50 + 100); // left trigger is backwards (0), right is forwards (200)
-    if (a > 200) {
-        a = 200;
-    }
-    if (b > 200) {
-        b = 200;
-    }
-    if (c> 200) {
-        c = 200;
-    }
-    if (d > 200) {
-        d = 200;
-    }
-    if (e > 200) {
-        e = 200;
-    }
 
+  let driveForward = ry * 0.50;
+  let driveTurn = rx * 0.50;
+  let bucketHeight = y * -1;
 
-  return [a, // left stick mixed
-          b, // left stick mixed
-          c, // right stick x axis
-          d, // right stick y axis
-          e, // left trigger is backwards (0), right is forwards (200)
-          b1, 
-          b2]
+  return [driveLeft(driveForward, driveTurn), // front left
+          driveRight(driveForward, driveTurn), // front right
+          driveLeft(driveForward, driveTurn), // back left
+          driveRight(driveForward, driveTurn), // back right
+          heightDirectControl(bucketHeight), // BL angle
+          b1, //BL trans
+          b2 //bl chain
+          //DB angle
+          //conveyer
+
+        ]
+}
+
+function driveLeft(driveForward, driveTurn) {
+  return driveForward - driveTurn;
+}
+
+function driveRight(driveForward, driveTurn) {
+  return driveForward + driveTurn;
+}
+
+function heightDirectControl(bucketHeight) {
+  return bucketHeight;
 }
 
 

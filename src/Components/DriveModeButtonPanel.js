@@ -10,6 +10,14 @@ import { setStateClient, emergencyStopClient, motorCommandPublisher } from '../r
 
 
 function formatGamepadState(axes, buttons) {
+
+  var controllermin = -1;
+  var controllermax = 1;
+  var motormin = 0;
+  var motormax = 200;
+  axes = axes.map(value => mapValue(value, controllermin, controllermax, motormin, motormax));
+  buttons = buttons.map(value => mapValue(value, controllermin, controllermax, motormin, motormax));
+
   let rx = axes[3];
   let ry = axes[4];
   let x = axes[0];
@@ -38,15 +46,19 @@ function formatGamepadState(axes, buttons) {
 }
 
 function driveLeft(driveForward, driveTurn) {
-  return driveForward - driveTurn;
+  return driveForward + driveTurn;
 }
 
 function driveRight(driveForward, driveTurn) {
-  return driveForward + driveTurn;
+  return driveForward - driveTurn;
 }
 
 function heightDirectControl(bucketHeight) {
   return bucketHeight;
+}
+
+function mapValue(input, inputStart, inputEnd, outputStart, outputEnd) {
+  return outputStart + ((outputEnd - outputStart) / (inputEnd - inputStart)) * (input - inputStart);
 }
 
 

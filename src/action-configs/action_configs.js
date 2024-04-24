@@ -32,7 +32,7 @@ export { lowerBinConfig };
 var digConfig = "{ \
     \"name\": \"dig\", \
     \"update_delay\": 0.1, \
-    \"speed\": 70, \
+    \"speed\": 50, \
     \"duration\": 10 \
 }";
 export { digConfig };

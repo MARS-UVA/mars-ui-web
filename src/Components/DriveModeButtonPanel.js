@@ -49,8 +49,8 @@ function formatGamepadState(axes, buttons) {
   btLT = mapValue(btLT, buttonOutputMin, buttonOutputMax, motorMin, motorMax); // remap the value to 0-200 because only using one button for dumping
   let dumpPower = calculateMotorPower(reverseVal, btLT, 0);
 
-  let driveForward = rightStickY * 0.50;
-  let driveTurn = leftStickX * 0.50;
+  let driveForward = rightStickY;
+  let driveTurn = leftStickX;
 
   return [driveLeft(driveForward, driveTurn), // front left wheel
           driveRight(driveForward, driveTurn), // front right wheel
@@ -69,11 +69,11 @@ function calculateMotorPower(restVal, forwardPower, reversePower) {
 }
 
 function driveLeft(driveForward, driveTurn) {
-  return driveForward + driveTurn;
+  return 0.5(driveForward + driveTurn);
 }
 
 function driveRight(driveForward, driveTurn) {
-  return driveForward - driveTurn;
+  return 0.5(driveForward - driveTurn);
 }
 
 function heightDirectControl(bucketHeight) {

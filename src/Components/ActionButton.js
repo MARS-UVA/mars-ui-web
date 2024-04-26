@@ -6,30 +6,55 @@ import { startActionClient } from '../ros-setup';
 import '../action-configs/action_configs';
 import { digConfig, raiseLadderConfig, lowerLadderConfig, raiseBinConfig, lowerBinConfig } from "../action-configs/action_configs";
 
-export default function ActionButton({label}, type){
+export default function ActionButton({label}, type, {config}){
 
     var action_decription = "";
 
     switch(type) {
         case "raise_ladder":
-            action_decription = raiseLadderConfig;
+            action_decription = "{ \
+                \"name\": \"${config.name}\", \
+                \"update_delay\": ${config.update_delay}, \
+                \"speed\": ${config.speed}, \
+                \"raised_angle\": ${config.raised_angle} \
+            }";
             break;
         case "lower_ladder":
-            action_decription = lowerLadderConfig;
+            action_decription = action_decription = "{ \
+                \"name\": \"${config.name}\", \
+                \"update_delay\": ${config.update_delay}, \
+                \"speed\": ${config.speed}, \
+                \"raised_angle\": ${config.raised_angle} \
+            }";
             break;
         case "raise_bin":
-            action_decription = raiseBinConfig;
+            action_decription = "{ \
+                \"name\": \"${config.name}\", \
+                \"update_delay\": ${config.update_delay}, \
+                \"speed\": ${config.speed}, \
+            }";
             break;
         case "lower_bin":
-            action_decription = lowerBinConfig;
+            action_decription = "{ \
+                \"name\": \"${config.name}\", \
+                \"update_delay\": ${config.update_delay}, \
+                \"speed\": ${config.speed}, \
+                \"lowered_angle\": ${config.lowered_angle} \
+            }";
             break;
         default:
-            action_decription = digConfig;
+            action_decription = "{ \
+                \"name\": \"${config.name}\", \
+                \"update_delay\": ${config.update_delay}, \
+                \"speed\": ${config.speed}, \
+                \"duration\": ${config.lowered_angle} \
+            }";
       }
 
     //activates on action button click
     function handleClick(){
         // TODO: grab actual json from files once editing functionality is finished
+
         var request = new ROSLIB.ServiceRequest({
             action_description_json: action_decription
         });

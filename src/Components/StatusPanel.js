@@ -7,7 +7,7 @@ export default function StatusPanel(props){
 
     return (
         <div>
-        <Typography variant="p">{connection}</Typography>
+        <Typography variant="p">Jetson Connection Status: {connection}</Typography>
         </div>
     )
 }

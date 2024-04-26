@@ -35,10 +35,10 @@ function arraysEqual(a, b) {
   return true;
 }
 
-export default function DriveModeButtonPanel() {
+export default function DriveModeButtonPanel({ driveMode, updateDriveMode }) {
 
   //state for updating drive mode
-  const [driveMode, setDriveMode] = useState('idle');
+  //const [driveMode, setDriveMode] = useState('idle');
   const [gamepadConnectedText, setGamepadConnectedText] = useState("No gamepad connected!");
   const gamepadState = useRef(null);
 
@@ -54,7 +54,7 @@ export default function DriveModeButtonPanel() {
 
   //onclick handler that updates state
   const handleChange = (event, newDriveMode) => {
-    setDriveMode(newDriveMode);
+    updateDriveMode(newDriveMode);
   };
 
   //hook that activates on state change
@@ -128,7 +128,7 @@ export default function DriveModeButtonPanel() {
 
       <Button sx={{ml:5}} variant="contained" size="large" color="error" onClick={()=>handleESTOP()}>ESTOP</Button>
       <br/>
-      <small>{gamepadConnectedText}</small>
+      <small>Gamepad Connection Status: {gamepadConnectedText}</small>
     </div>
   );
 }

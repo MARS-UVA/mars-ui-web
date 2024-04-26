@@ -36,3 +36,14 @@ var digConfig = "{ \
     \"duration\": 10 \
 }";
 export { digConfig };
+
+var dumpConfig = "{ \
+    \"name\": \"dump\", \
+    \"update_delay\": 0.1, \
+    \"speed\": 50 \
+}";
+export { digConfig };
+
+function resetRaiseLadderConfig(update_delay=0.05, speed=50, raised_angle=52.0) {
+    raiseLadderConfig = config;
+}

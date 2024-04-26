@@ -8,7 +8,7 @@ import * as ROSLIB from 'roslib';
 import { registerResolver } from "@grpc/grpc-js/build/src/resolver";
 import { setStateClient, emergencyStopClient, motorCommandPublisher } from '../ros-setup';
 
-
+let dumpPower = 100;
 function formatGamepadState(axes, buttons) {
   //This code works with the Logitech Wireless Gamepad F710
 
@@ -44,7 +44,6 @@ function formatGamepadState(axes, buttons) {
   let ladderHeight = calculateMotorPower(restVal, btY, btB);
   let blChainPower = calculateMotorPower(restVal, btRT, 0);
 
-  let dumpPower = 100
   if (btX == 100) {
     dumpPower = 200;
   } else if (btA == 100) {

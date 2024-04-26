@@ -56,7 +56,7 @@ function formatGamepadState(axes, buttons) {
           driveRight(driveForward, driveTurn), // front right wheel
           driveLeft(driveForward, driveTurn), // back left wheel
           driveRight(driveForward, driveTurn), // back right wheel
-          heightDirectControl(bucketHeight), // BL angle
+          bucketHeight, // BL angle
           blChainPower, //Bucket ladder chain
           dumpPower//dump on or off
           //DB angle
@@ -74,10 +74,6 @@ function driveLeft(driveForward, driveTurn) {
 
 function driveRight(driveForward, driveTurn) {
   return 0.5(driveForward - driveTurn);
-}
-
-function heightDirectControl(bucketHeight) {
-  return bucketHeight;
 }
 
 function mapValue(input, inputStart, inputEnd, outputStart, outputEnd) {

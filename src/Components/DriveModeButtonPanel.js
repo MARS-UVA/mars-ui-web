@@ -10,39 +10,62 @@ import { setStateClient, emergencyStopClient, motorCommandPublisher } from '../r
 
 
 function formatGamepadState(axes, buttons) {
+  //This code works with the Logitech Wireless Gamepad F710
 
-  var controllermin = -1;
-  var controllermax = 1;
-  var motormin = 0;
-  var motormax = 200;
-  axes = axes.map(value => mapValue(value, controllermin, controllermax, motormin, motormax));
-  buttons = buttons.map(value => mapValue(value, controllermin, controllermax, motormin, motormax));
+  let controllerMin = -1;
+  let controllerMax = 1;
+  let motorMin = 0;
+  let motorMax = 200;
+  let buttonInputMin = 0;
+  let buttonInputMax = 1;
+  let buttonOutputMin = 0;
+  let buttonOutputMax = 100;
+  let restVal = 100;
+  let reverseVal = 0;
 
-  let rx = axes[3];
-  let ry = axes[4];
-  let x = axes[0];
-  let y = axes[1];
-  let lt = axes[2];
-  let rt = axes[5];
+  let buttonValueArray = buttons.map(button => button.value);
+  axes = axes.map(value => mapValue(value, controllerMin, controllerMax, motorMin, motorMax));
+  buttonValueArray = buttonValueArray.map(value => mapValue(value, buttonInputMin, buttonInputMax, buttonOutputMin, buttonOutputMax));
 
-  let b1 = 100 + buttons[3].value*100 - buttons[0].value*100; // north=200, south=0 (deposit bin angle)
-  let b2 = 100 + buttons[1].value*100 - buttons[2].value*100; // east=200, west=0 (conveyor belt on/off)
+  let leftStickX = axes[0];
+  let leftStickY = axes[1];
+  let rightStickX = axes[2];
+  let rightStickY = axes[3];
+  let dPadX = axes[4];
+  let dPadY = axes[5];
 
-  let driveForward = ry * 0.50;
-  let driveTurn = rx * 0.50;
-  let bucketHeight = y * -1;
+  let btX = buttonValueArray[0];
+  let btA = buttonValueArray[1];
+  let btB = buttonValueArray[2];
+  let btY = buttonValueArray[3];
+  let btLB = buttonValueArray[4];
+  let btRB = buttonValueArray[5];
+  let btLT = buttonValueArray[6];
+  let btRT = buttonValueArray[7];
 
-  return [driveLeft(driveForward, driveTurn), // front left
-          driveRight(driveForward, driveTurn), // front right
-          driveLeft(driveForward, driveTurn), // back left
-          driveRight(driveForward, driveTurn), // back right
+  let bucketHeight = calculateMotorPower(restVal, btY, btB);
+  let blChainPower = calculateMotorPower(restVal, btRT, 0);
+
+  btLT = mapValue(btLT, buttonOutputMin, buttonOutputMax, motorMin, motorMax); // remap the value to 0-200 because only using one button for dumping
+  let dumpPower = calculateMotorPower(reverseVal, btLT, 0);
+
+  let driveForward = rightStickY * 0.50;
+  let driveTurn = leftStickX * 0.50;
+
+  return [driveLeft(driveForward, driveTurn), // front left wheel
+          driveRight(driveForward, driveTurn), // front right wheel
+          driveLeft(driveForward, driveTurn), // back left wheel
+          driveRight(driveForward, driveTurn), // back right wheel
           heightDirectControl(bucketHeight), // BL angle
-          b1, //BL trans
-          b2 //bl chain
+          blChainPower, //Bucket ladder chain
+          dumpPower//dump on or off
           //DB angle
           //conveyer
-
         ]
+}
+
+function calculateMotorPower(restVal, forwardPower, reversePower) {
+  return restVal + forwardPower - reversePower;
 }
 
 function driveLeft(driveForward, driveTurn) {

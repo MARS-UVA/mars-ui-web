@@ -41,7 +41,7 @@ function formatGamepadState(axes, buttons) {
   let btLT = buttonValueArray[6];
   let btRT = buttonValueArray[7];
 
-  let bucketHeight = calculateMotorPower(restVal, btY, btB);
+  let ladderHeight = calculateMotorPower(restVal, btY, btB);
   let blChainPower = calculateMotorPower(restVal, btRT, 0);
 
   let dumpPower = 100
@@ -58,7 +58,7 @@ function formatGamepadState(axes, buttons) {
           driveRight(driveForward, driveTurn), // front right wheel
           driveLeft(driveForward, driveTurn), // back left wheel
           driveRight(driveForward, driveTurn), // back right wheel
-          bucketHeight,
+          ladderHeight,
           blChainPower,
           dumpPower//dump on or off
           //DB angle

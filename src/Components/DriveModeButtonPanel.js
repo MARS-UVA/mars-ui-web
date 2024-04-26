@@ -15,17 +15,15 @@ function formatGamepadState(axes, buttons) {
   let controllerMin = -1;
   let controllerMax = 1;
   let motorMin = 0;
-  let motorMax = 200;
+  let motorMax = 100;
   let buttonInputMin = 0;
   let buttonInputMax = 1;
-  let buttonOutputMin = 0;
-  let buttonOutputMax = 100;
   let restVal = 100;
   let reverseVal = 0;
 
   let buttonValueArray = buttons.map(button => button.value);
   axes = axes.map(value => mapValue(value, controllerMin, controllerMax, motorMin, motorMax));
-  buttonValueArray = buttonValueArray.map(value => mapValue(value, buttonInputMin, buttonInputMax, buttonOutputMin, buttonOutputMax));
+  buttonValueArray = buttonValueArray.map(value => mapValue(value, buttonInputMin, buttonInputMax, motorMin, motorMax));
 
   let leftStickX = axes[0];
   let leftStickY = axes[1];
@@ -46,8 +44,12 @@ function formatGamepadState(axes, buttons) {
   let bucketHeight = calculateMotorPower(restVal, btY, btB);
   let blChainPower = calculateMotorPower(restVal, btRT, 0);
 
-  btLT = mapValue(btLT, buttonOutputMin, buttonOutputMax, motorMin, motorMax); // remap the value to 0-200 because only using one button for dumping
-  let dumpPower = calculateMotorPower(reverseVal, btLT, 0);
+  let dumpPower = 100
+  if (btX == 100) {
+    dumpPower = 200;
+  } else if (btA == 100) {
+    dumpPower = 0;
+  }
 
   let driveForward = rightStickY;
   let driveTurn = leftStickX;
@@ -56,8 +58,8 @@ function formatGamepadState(axes, buttons) {
           driveRight(driveForward, driveTurn), // front right wheel
           driveLeft(driveForward, driveTurn), // back left wheel
           driveRight(driveForward, driveTurn), // back right wheel
-          bucketHeight, // BL angle
-          blChainPower, //Bucket ladder chain
+          bucketHeight,
+          blChainPower,
           dumpPower//dump on or off
           //DB angle
           //conveyer
@@ -69,11 +71,11 @@ function calculateMotorPower(restVal, forwardPower, reversePower) {
 }
 
 function driveLeft(driveForward, driveTurn) {
-  return 0.5(driveForward + driveTurn);
+  return (driveForward + driveTurn);
 }
 
 function driveRight(driveForward, driveTurn) {
-  return 0.5(driveForward - driveTurn);
+  return (driveForward - driveTurn);
 }
 
 function mapValue(input, inputStart, inputEnd, outputStart, outputEnd) {

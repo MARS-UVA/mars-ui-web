@@ -9,12 +9,14 @@ import { registerResolver } from "@grpc/grpc-js/build/src/resolver";
 import { setStateClient, emergencyStopClient, motorCommandPublisher } from '../ros-setup';
 
 let dumpPower = 100;
+let bucketIsForward = true;
+let ladderRaisePower, blChainPower = 100;
 function formatGamepadState(axes, buttons) {
   //This code works with the Logitech Wireless Gamepad F710
-
+  const MAX_POWER = 200;
   let controllerMin = -1;
   let controllerMax = 1;
-  let motorMin = 0;
+  let motorMin = -100;
   let motorMax = 100;
   let buttonInputMin = 0;
   let buttonInputMax = 1;
@@ -23,26 +25,34 @@ function formatGamepadState(axes, buttons) {
 
   let buttonValueArray = buttons.map(button => button.value);
   axes = axes.map(value => mapValue(value, controllerMin, controllerMax, motorMin, motorMax));
-  buttonValueArray = buttonValueArray.map(value => mapValue(value, buttonInputMin, buttonInputMax, motorMin, motorMax));
+  //buttonValueArray = buttonValueArray.map(value => mapValue(value, buttonInputMin, buttonInputMax, motorMin, motorMax));
 
   let leftStickX = axes[0];
   let leftStickY = axes[1];
   let rightStickX = axes[2];
   let rightStickY = axes[3];
-  let dPadX = axes[4];
-  let dPadY = axes[5];
 
-  let btX = buttonValueArray[0];
-  let btA = buttonValueArray[1];
-  let btB = buttonValueArray[2];
+  let btA = buttonValueArray[0];
+  let btB = buttonValueArray[1];
+  let btX = buttonValueArray[2];
   let btY = buttonValueArray[3];
   let btLB = buttonValueArray[4];
   let btRB = buttonValueArray[5];
   let btLT = buttonValueArray[6];
   let btRT = buttonValueArray[7];
+  let back = buttonValueArray[8];
+  let start = buttonValueArray[9];
+  let leftStickClick = buttonValueArray[10];
+  let rightStickClick = buttonValueArray[11];
+  let dPadUp = buttonValueArray[12];
+  let dPadDown = buttonValueArray[13];
+  let dPadLeft = buttonValueArray[14];
+  let dPadRight = buttonValueArray[15];
 
-  let ladderHeight = calculateMotorPower(restVal, btY, btB);
-  let blChainPower = calculateMotorPower(restVal, btRT, 0);
+  //mode switches 12-15 buttons and axes 0-1 between dpad and left stick, we want the mode where the light is off
+
+  //let ladderHeight = calculateMotorPower(restVal, btY, btB);
+  //let blChainPower = calculateMotorPower(restVal, btRT, 0);
 
   if (btX == 100) {
     dumpPower = 200;
@@ -50,14 +60,35 @@ function formatGamepadState(axes, buttons) {
     dumpPower = 0;
   }
 
+
+  checkLadderRaisePress(btY, btB);
+  checkBinRaisePress(btX, btA);
+
+
+
+  // let bucketHeight = calculateMotorPower(restVal, btY, btB);
+  // let blChainPower = calculateMotorPower(restVal, btRT, 0);
+
+  // let dumpPower = 100
+  // if (btX == 100) {
+  //   dumpPower = 200;
+  // } else if (btA == 100) {
+  //   dumpPower = 0;
+  // }
+
   let driveForward = rightStickY;
-  let driveTurn = leftStickX;
+  let driveTurn = rightStickX;
+
+  processBucketRotation(btLB, btLT, btRT);
+  processLadderAngle(leftStickY);
+  processBinAngle(btY, btB);
+  processWebcamServo()
 
   return [driveLeft(driveForward, driveTurn), // front left wheel
           driveRight(driveForward, driveTurn), // front right wheel
           driveLeft(driveForward, driveTurn), // back left wheel
           driveRight(driveForward, driveTurn), // back right wheel
-          ladderHeight,
+          ladderRaisePower,
           blChainPower,
           dumpPower//dump on or off
           //DB angle
@@ -66,21 +97,39 @@ function formatGamepadState(axes, buttons) {
 }
 
 function calculateMotorPower(restVal, forwardPower, reversePower) {
-  return restVal + forwardPower - reversePower;
+  return (forwardPower - reversePower);
+}
+
+function processBucketRotation(LB_val, LT_val, RT_val) {
+  if (LB_val == 1) {
+    bucketIsForward = !bucketIsForward;
+    blChainPower = 100;
+  }
+  if (bucketIsForward && LT_val == 1) {
+    blChainPower = Math.min(blChainPower + 1, 200);
+  }
+  else if(bucketIsForward && RT_val == 1){
+    blChainPower = Math.max(blChainPower - 1, 100);
+  }
+  else if(!bucketIsForward && LT_val == 1){
+    blChainPower = Math.max(blChainPower - 1, 0);
+  }
+  else if(!bucketIsForward && RT_val == 1){
+    blChainPower = Math.min(blChainPower + 1, 100);
+  }
 }
 
 function driveLeft(driveForward, driveTurn) {
-  return (driveForward + driveTurn);
+  return Math.max(Math.min(restVal + driveForward + driveTurn, MAX_CURRENT), 0);
 }
 
 function driveRight(driveForward, driveTurn) {
-  return (driveForward - driveTurn);
+  return Math.max(Math.min(restVal + driveForward - driveTurn, MAX_CURRENT), 0);
 }
 
 function mapValue(input, inputStart, inputEnd, outputStart, outputEnd) {
   return outputStart + ((outputEnd - outputStart) / (inputEnd - inputStart)) * (input - inputStart);
 }
-
 
 function arraysEqual(a, b) {
   for (let i = 0; i < a.length; ++i) {

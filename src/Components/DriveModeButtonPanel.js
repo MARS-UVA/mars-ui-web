@@ -11,19 +11,22 @@ import { setStateClient, emergencyStopClient, motorCommandPublisher } from '../r
 let dumpPower = 100;
 function formatGamepadState(axes, buttons) {
   //This code works with the Logitech Wireless Gamepad F710
-
+  const MAX_POWER = 200;
   let controllerMin = -1;
   let controllerMax = 1;
-  let motorMin = 0;
+  let motorMin = -100;
   let motorMax = 100;
   let buttonInputMin = 0;
   let buttonInputMax = 1;
   let restVal = 100;
   let reverseVal = 0;
 
+  let bucketIsForward = 1;
+  let bucketPower = 100;
+
   let buttonValueArray = buttons.map(button => button.value);
   axes = axes.map(value => mapValue(value, controllerMin, controllerMax, motorMin, motorMax));
-  buttonValueArray = buttonValueArray.map(value => mapValue(value, buttonInputMin, buttonInputMax, motorMin, motorMax));
+  //buttonValueArray = buttonValueArray.map(value => mapValue(value, buttonInputMin, buttonInputMax, motorMin, motorMax));
 
   let leftStickX = axes[0];
   let leftStickY = axes[1];
@@ -47,8 +50,6 @@ function formatGamepadState(axes, buttons) {
   let dPadLeft = buttonValueArray[14];
   let dPadRight = buttonValueArray[15];
 
-  
-
   //mode switches 12-15 buttons and axes 0-1 between dpad and left stick, we want the mode where the light is off
 
   let ladderHeight = calculateMotorPower(restVal, btY, btB);
@@ -60,8 +61,29 @@ function formatGamepadState(axes, buttons) {
     dumpPower = 0;
   }
 
+  processBucketRotation(btLB, btLT, btRT);
+  processLadderAngle(leftStickY);
+  processBinAngle(btY, btB);
+  processWebcamServo()
+
+
+  checkLadderRaisePress(btY, btB);
+  checkBinRaisePress(btX, btA);
+
+
+
+  // let bucketHeight = calculateMotorPower(restVal, btY, btB);
+  // let blChainPower = calculateMotorPower(restVal, btRT, 0);
+
+  // let dumpPower = 100
+  // if (btX == 100) {
+  //   dumpPower = 200;
+  // } else if (btA == 100) {
+  //   dumpPower = 0;
+  // }
+
   let driveForward = rightStickY;
-  let driveTurn = leftStickX;
+  let driveTurn = rightStickX;
 
   return [driveLeft(driveForward, driveTurn), // front left wheel
           driveRight(driveForward, driveTurn), // front right wheel
@@ -76,15 +98,25 @@ function formatGamepadState(axes, buttons) {
 }
 
 function calculateMotorPower(restVal, forwardPower, reversePower) {
-  return restVal + forwardPower - reversePower;
+  return (forwardPower - reversePower);
+}
+
+function checkLadderRaisePress(btY, btB) {
+  if (btY == 1){
+    //raise ladder - call auto_dig action
+    
+  }
+}
+
+function checkBinRaisePress(btX, btA) {
 }
 
 function driveLeft(driveForward, driveTurn) {
-  return (driveForward + driveTurn);
+  return Math.max(Math.min(restVal + driveForward + driveTurn, MAX_CURRENT), 0);
 }
 
 function driveRight(driveForward, driveTurn) {
-  return (driveForward - driveTurn);
+  return Math.max(Math.min(restVal + driveForward - driveTurn, MAX_CURRENT), 0);
 }
 
 function mapValue(input, inputStart, inputEnd, outputStart, outputEnd) {

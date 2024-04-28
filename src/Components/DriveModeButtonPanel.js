@@ -7,24 +7,36 @@ import Button from '@mui/material/Button';
 import * as ROSLIB from 'roslib';
 import { registerResolver } from "@grpc/grpc-js/build/src/resolver";
 import { setStateClient, emergencyStopClient, motorCommandPublisher } from '../ros-setup';
+import { raiseBinConfig, lowerBinConfig } from "../action-configs/action_configs";
+import { startActionClient } from '../ros-setup';
 
-let dumpPower = 100;
+let isBinLowering = false;
 let bucketIsForward = true;
-let ladderRaisePower, blChainPower = 100;
+let ladderRaisePower = 100
+let blChainPower = 100;
+let restVal = 100;
+const MAX_POWER = 200;
+const NEUTRAL_POWER = 100;
+const MIN_POWER = 0;
+let dumpPower = 100;
+let binPower = 0;
+
 function formatGamepadState(axes, buttons) {
   //This code works with the Logitech Wireless Gamepad F710
-  const MAX_POWER = 200;
   let controllerMin = -1;
   let controllerMax = 1;
   let motorMin = -100;
   let motorMax = 100;
   let buttonInputMin = 0;
   let buttonInputMax = 1;
-  let restVal = 100;
   let reverseVal = 0;
 
+  let bucketIsForward = 1;
+  let bucketPower = 100;
+  let binPower = 100;
+
   let buttonValueArray = buttons.map(button => button.value);
-  axes = axes.map(value => mapValue(value, controllerMin, controllerMax, motorMin, motorMax));
+  axes = axes.map(value => mapValue(value, controllerMax, controllerMin, motorMin, motorMax));
   //buttonValueArray = buttonValueArray.map(value => mapValue(value, buttonInputMin, buttonInputMax, motorMin, motorMax));
 
   let leftStickX = axes[0];
@@ -50,39 +62,13 @@ function formatGamepadState(axes, buttons) {
   let dPadRight = buttonValueArray[15];
 
   //mode switches 12-15 buttons and axes 0-1 between dpad and left stick, we want the mode where the light is off
-
-  //let ladderHeight = calculateMotorPower(restVal, btY, btB);
-  //let blChainPower = calculateMotorPower(restVal, btRT, 0);
-
-  if (btX == 100) {
-    dumpPower = 200;
-  } else if (btA == 100) {
-    dumpPower = 0;
-  }
-
-
-  checkLadderRaisePress(btY, btB);
-  checkBinRaisePress(btX, btA);
-
-
-
-  // let bucketHeight = calculateMotorPower(restVal, btY, btB);
-  // let blChainPower = calculateMotorPower(restVal, btRT, 0);
-
-  // let dumpPower = 100
-  // if (btX == 100) {
-  //   dumpPower = 200;
-  // } else if (btA == 100) {
-  //   dumpPower = 0;
-  // }
-
   let driveForward = rightStickY;
   let driveTurn = rightStickX;
+  ladderRaisePower = leftStickY + NEUTRAL_POWER;
 
   processBucketRotation(btLB, btLT, btRT);
-  processLadderAngle(leftStickY);
   processBinAngle(btY, btB);
-  processWebcamServo()
+  //processWebcamServo()
 
   return [driveLeft(driveForward, driveTurn), // front left wheel
           driveRight(driveForward, driveTurn), // front right wheel
@@ -90,41 +76,51 @@ function formatGamepadState(axes, buttons) {
           driveRight(driveForward, driveTurn), // back right wheel
           ladderRaisePower,
           blChainPower,
-          dumpPower//dump on or off
+          binPower,
           //DB angle
           //conveyer
         ]
+}
+
+function processBinAngle(btY, btB) {
+  if (btY) {
+    isBinLowering = false;
+  }
+  if (btB) {
+    isBinLowering = true;
+  }
+  if (isBinLowering) {
+    let request = new ROSLIB.ServiceRequest({
+      action_description_json: lowerBinConfig
+    });
+    let json = JSON.parse(request.action_description_json)
+    startActionClient.callService(request, function(result) {
+      console.log('Start action service called with action: ' + json.name + '.');
+    });
+    binPower = 150;
+  }
+  else {
+    let request = new ROSLIB.ServiceRequest({
+      action_description_json: raiseBinConfig
+    });
+    let json = JSON.parse(request.action_description_json)
+    startActionClient.callService(request, function(result) {
+      console.log('Start action service called with action: ' + json.name + '.');
+    });
+    binPower = 50;
+  }
 }
 
 function calculateMotorPower(restVal, forwardPower, reversePower) {
   return (forwardPower - reversePower);
 }
 
-function processBucketRotation(LB_val, LT_val, RT_val) {
-  if (LB_val == 1) {
-    bucketIsForward = !bucketIsForward;
-    blChainPower = 100;
-  }
-  if (bucketIsForward && LT_val == 1) {
-    blChainPower = Math.min(blChainPower + 1, 200);
-  }
-  else if(bucketIsForward && RT_val == 1){
-    blChainPower = Math.max(blChainPower - 1, 100);
-  }
-  else if(!bucketIsForward && LT_val == 1){
-    blChainPower = Math.max(blChainPower - 1, 0);
-  }
-  else if(!bucketIsForward && RT_val == 1){
-    blChainPower = Math.min(blChainPower + 1, 100);
-  }
-}
-
 function driveLeft(driveForward, driveTurn) {
-  return Math.max(Math.min(restVal + driveForward + driveTurn, MAX_CURRENT), 0);
+  return Math.max(Math.min((restVal + driveForward + driveTurn), MAX_POWER), 0);
 }
 
 function driveRight(driveForward, driveTurn) {
-  return Math.max(Math.min(restVal + driveForward - driveTurn, MAX_CURRENT), 0);
+  return Math.max(Math.min((restVal + driveForward - driveTurn), MAX_POWER), 0);
 }
 
 function mapValue(input, inputStart, inputEnd, outputStart, outputEnd) {
@@ -148,7 +144,7 @@ export default function DriveModeButtonPanel() {
 
   // Inspired by https://dev.to/xtrp/a-complete-guide-to-the-html5-gamepad-api-2k
   window.addEventListener("gamepadconnected", (e) => {
-    console.log(`Gamepad connected at index ${e.gamepad.index}: ${e.gamepad.id}, ${e.gamepad.axes.length} axes, ${e.gamepad.buttons.length} buttons.`);
+    //console.log(`Gamepad connected at index ${e.gamepad.index}: ${e.gamepad.id}, ${e.gamepad.axes.length} axes, ${e.gamepad.buttons.length} buttons.`);
     setGamepadConnectedText(`Gamepad connected: ${e.gamepad.id}`);
   });
   window.addEventListener("gamepaddisconnected", (e) => {
@@ -168,7 +164,7 @@ export default function DriveModeButtonPanel() {
         return;
       }
       const myGamepad = navigator.getGamepads()[0]; // use the first gamepad
-      console.log(myGamepad);
+      //console.log(myGamepad);
       if(!myGamepad) {
         return;
       }

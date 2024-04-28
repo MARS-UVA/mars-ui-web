@@ -29,17 +29,27 @@ function formatGamepadState(axes, buttons) {
   let leftStickY = axes[1];
   let rightStickX = axes[2];
   let rightStickY = axes[3];
-  let dPadX = axes[4];
-  let dPadY = axes[5];
 
-  let btX = buttonValueArray[0];
-  let btA = buttonValueArray[1];
-  let btB = buttonValueArray[2];
+  let btA = buttonValueArray[0];
+  let btB = buttonValueArray[1];
+  let btX = buttonValueArray[2];
   let btY = buttonValueArray[3];
   let btLB = buttonValueArray[4];
   let btRB = buttonValueArray[5];
   let btLT = buttonValueArray[6];
   let btRT = buttonValueArray[7];
+  let back = buttonValueArray[8];
+  let start = buttonValueArray[9];
+  let leftStickClick = buttonValueArray[10];
+  let rightStickClick = buttonValueArray[11];
+  let dPadUp = buttonValueArray[12];
+  let dPadDown = buttonValueArray[13];
+  let dPadLeft = buttonValueArray[14];
+  let dPadRight = buttonValueArray[15];
+
+  
+
+  //mode switches 12-15 buttons and axes 0-1 between dpad and left stick, we want the mode where the light is off
 
   let ladderHeight = calculateMotorPower(restVal, btY, btB);
   let blChainPower = calculateMotorPower(restVal, btRT, 0);

@@ -7,11 +7,13 @@ import Button from '@mui/material/Button';
 import * as ROSLIB from 'roslib';
 import { registerResolver } from "@grpc/grpc-js/build/src/resolver";
 import { setStateClient, emergencyStopClient, motorCommandPublisher } from '../ros-setup';
+import { raiseBinConfig, lowerBinConfig } from "../action-configs/action_configs";
 
-let dumpPower = 100;
 function formatGamepadState(axes, buttons) {
   //This code works with the Logitech Wireless Gamepad F710
   const MAX_POWER = 200;
+  const NEUTRAL_POWER = 100;
+  const MIN_POWER = 0;
   let controllerMin = -1;
   let controllerMax = 1;
   let motorMin = -100;
@@ -23,6 +25,7 @@ function formatGamepadState(axes, buttons) {
 
   let bucketIsForward = 1;
   let bucketPower = 100;
+  let binPower = 100;
 
   let buttonValueArray = buttons.map(button => button.value);
   axes = axes.map(value => mapValue(value, controllerMin, controllerMax, motorMin, motorMax));
@@ -55,12 +58,6 @@ function formatGamepadState(axes, buttons) {
   let ladderHeight = calculateMotorPower(restVal, btY, btB);
   let blChainPower = calculateMotorPower(restVal, btRT, 0);
 
-  if (btX == 100) {
-    dumpPower = 200;
-  } else if (btA == 100) {
-    dumpPower = 0;
-  }
-
   processBucketRotation(btLB, btLT, btRT);
   processLadderAngle(leftStickY);
   processBinAngle(btY, btB);
@@ -70,6 +67,26 @@ function formatGamepadState(axes, buttons) {
   checkLadderRaisePress(btY, btB);
   checkBinRaisePress(btX, btA);
 
+  function processBinAngle(btY, btB) {
+    if (btY) {
+      var request = new ROSLIB.ServiceRequest({
+        action_description_json: raiseBinConfig
+      });
+      let json = JSON.parse(request.action_description_json)
+      startActionClient.callService(request, function(result) {
+        console.log('Start action service called with action: ' + json.name + '.');
+      });
+    } 
+    else if (btB) {
+      var request = new ROSLIB.ServiceRequest({
+        action_description_json: lowerBinConfig
+      });
+      let json = JSON.parse(request.action_description_json)
+      startActionClient.callService(request, function(result) {
+        console.log('Start action service called with action: ' + json.name + '.');
+      });
+    }
+  }
 
 
   // let bucketHeight = calculateMotorPower(restVal, btY, btB);
@@ -91,7 +108,7 @@ function formatGamepadState(axes, buttons) {
           driveRight(driveForward, driveTurn), // back right wheel
           ladderHeight,
           blChainPower,
-          dumpPower//dump on or off
+          binPower,
           //DB angle
           //conveyer
         ]
@@ -99,16 +116,6 @@ function formatGamepadState(axes, buttons) {
 
 function calculateMotorPower(restVal, forwardPower, reversePower) {
   return (forwardPower - reversePower);
-}
-
-function checkLadderRaisePress(btY, btB) {
-  if (btY == 1){
-    //raise ladder - call auto_dig action
-    
-  }
-}
-
-function checkBinRaisePress(btX, btA) {
 }
 
 function driveLeft(driveForward, driveTurn) {

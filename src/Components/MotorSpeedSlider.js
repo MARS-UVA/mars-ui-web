@@ -6,26 +6,8 @@ import { startActionClient } from '../ros-setup';
 import '../action-configs/action_configs';
 import { digConfig, raiseLadderConfig, lowerLadderConfig, raiseBinConfig, lowerBinConfig } from "../action-configs/action_configs";
 
-export default function MotorControlSlider({ label }, type, { range }, { configs }, { setConfigs }) {
-
-    var action_decription = "";
-
-    switch (type) {
-        case "raise_ladder":
-            action_decription = raiseLadderConfig;
-            break;
-        case "lower_ladder":
-            action_decription = lowerLadderConfig;
-            break;
-        case "raise_bin":
-            action_decription = raiseBinConfig;
-            break;
-        case "lower_bin":
-            action_decription = lowerBinConfig;
-            break;
-        default:
-            action_decription = digConfig;
-    }
+export default function MotorControlSlider({ label, type, range, config=null, min=0, val }) {
+    const condition = (type === "ir" || type === "webcam") ? true : false;
 
     //activates on action button click
     function handleClick() {
@@ -46,18 +28,39 @@ export default function MotorControlSlider({ label }, type, { range }, { configs
         console.log("edit")
     }
 
+    const handleSliderChange = (event, newValue) => {
+        if (type === "action") {
+            const { thisConfig, setConfig } = config;
+            setConfig({ ...thisConfig, speed: newValue });
+        }
+    }
+
+    const handleRangeChange = (event, newValue) => {
+        //Handle IR and webcam servos
+    }
+
     return (
         <Grid container item columnSpacing={2}>
-            <Grid item xs={1}><Button variant="outlined" onClick={() => handleEdit()}>Edit</Button></Grid>
+            <Grid item xs={1}><p>{label}</p></Grid>
             <Grid item xs={3}>
+            {condition ? (
                 <Slider
-                    defaultValue={ }
-                    getAriaValueText={valuetext}
-                    marks
+                    value={[min, val]}
+                    onChange={handleRangeChange}
+                    valueLabelDisplay="auto"
+                    aria-labelledby="range-slider"
+                    min={range[0]}
+                    max={range[1]}
+                />
+            ) : (
+                <Slider
+                    value={val}
+                    onChange={handleSliderChange}
                     min={range[0]}
                     max={range[1]}
                     valueLabelDisplay="auto"
                 />
+            )}
             </Grid>
         </Grid>
     );

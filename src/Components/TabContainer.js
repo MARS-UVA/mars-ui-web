@@ -10,6 +10,7 @@ import HeroFeedbackPanel from "./HeroFeedbackPanel";
 import ControlPanel from "./ActionControlPanel";
 import Grid from '@mui/material/Grid';
 import CameraPane from "./CameraPane";
+import { heroFeedbackSubscriber } from "../ros-setup";
 
 export default function TabContainer({driveMode, updateDriveMode}){
 
@@ -21,6 +22,23 @@ export default function TabContainer({driveMode, updateDriveMode}){
     const handleTabSwitch = (event, newValue) => {
         setTabValue(newValue);
     };
+
+    // var motorCurrents;
+    // var ladderAngleR;
+    // var ladderAngleL;
+    // var depositBinRaised;
+    // var depositBinLowered;
+    // heroFeedbackSubscriber.subscribe(function(message) {
+    //   motorCurrents = message.currents;
+    //   depositBinRaised = message.depositBinRaised;
+    //   depositBinLowered = message.depositBinLowered;
+    //   ladderAngleR = message.bucketLadderAngleR;
+    //   ladderAngleL = message.bucketLadderAngleL;
+    
+    //   console.log('Ros setup received angle: ' 
+    //     + heroLadderAngle + "\ncurrents: " + motorCurrents 
+    //     + "\nraised: " + depositBinRaised);
+    // });
 
     //Component for Tab Panel that is associated with a tab
     //make tab panel visible based on what tab is selected
@@ -63,9 +81,9 @@ export default function TabContainer({driveMode, updateDriveMode}){
               <Grid xs={8}>
                 <ActionPanel driveMode={driveMode} />
               </Grid>
-              <Grid xs={4}>
-                <HeroFeedbackPanel />
-              </Grid>
+              {/* <Grid xs={4}>
+                <HeroFeedbackPanel currents={motorCurrents} rightAngle={ladderAngleR} leftAngle={ladderAngleL} binRaised={depositBinRaised} binLowered={depositBinLowered} />
+              </Grid> */}
               <Grid xs={6}>
                 <CameraPane />
               </Grid>

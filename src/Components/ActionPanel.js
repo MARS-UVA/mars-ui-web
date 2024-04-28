@@ -3,7 +3,6 @@ import ActionButton from './ActionButton'
 import Grid from '@mui/material/Grid';
 
 export default function ActionPanel({driveMode}){
-
     const [raiseLadderConfig, setRaiseLadderConfig] = useState({
         name: "raise_ladder",
         update_delay: 0.05,
@@ -50,7 +49,7 @@ export default function ActionPanel({driveMode}){
             </Grid>
         }
         <Grid xs={6}>
-            <ControlPanel configs={configs} setConfigs={setConfigs}/>
+            <ControlPanel configs={configs} setConfigs={setConfigs} driveMode={driveMode}/>
         </Grid>
     </Grid>
     );

@@ -2,6 +2,7 @@ import React from "react";
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Grid from '@mui/material/Grid';
 import Checkbox from '@mui/material/Checkbox';
+import { heroFeedbackSubscriber } from "../ros-setup";
 
 class HeroFeedbackPanel extends React.Component {
 

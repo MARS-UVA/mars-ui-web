@@ -7,9 +7,8 @@ import '../action-configs/action_configs';
 import { digConfig, raiseLadderConfig, lowerLadderConfig, raiseBinConfig, lowerBinConfig } from "../action-configs/action_configs";
 
 export default function ActionButton({label}, type, {config}){
-
+    let config = config
     var action_decription = "";
-
     switch(type) {
         case "raise_ladder":
             action_decription = "{ \
@@ -20,7 +19,7 @@ export default function ActionButton({label}, type, {config}){
             }";
             break;
         case "lower_ladder":
-            action_decription = action_decription = "{ \
+            action_decription = "{ \
                 \"name\": \"${config.name}\", \
                 \"update_delay\": ${config.update_delay}, \
                 \"speed\": ${config.speed}, \
@@ -54,7 +53,6 @@ export default function ActionButton({label}, type, {config}){
     //activates on action button click
     function handleClick(){
         // TODO: grab actual json from files once editing functionality is finished
-
         var request = new ROSLIB.ServiceRequest({
             action_description_json: action_decription
         });

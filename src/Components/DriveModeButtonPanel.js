@@ -9,6 +9,7 @@ import { registerResolver } from "@grpc/grpc-js/build/src/resolver";
 import { setStateClient, emergencyStopClient, motorCommandPublisher } from '../ros-setup';
 import { raiseBinConfig, lowerBinConfig } from "../action-configs/action_configs";
 
+let isBinLowering = false;
 function formatGamepadState(axes, buttons) {
   //This code works with the Logitech Wireless Gamepad F710
   const MAX_POWER = 200;
@@ -69,16 +70,13 @@ function formatGamepadState(axes, buttons) {
 
   function processBinAngle(btY, btB) {
     if (btY) {
-      var request = new ROSLIB.ServiceRequest({
-        action_description_json: raiseBinConfig
-      });
-      let json = JSON.parse(request.action_description_json)
-      startActionClient.callService(request, function(result) {
-        console.log('Start action service called with action: ' + json.name + '.');
-      });
-    } 
-    else if (btB) {
-      var request = new ROSLIB.ServiceRequest({
+      isBinLowering = false;
+    }
+    if (btB) {
+      isBinLowering = true;
+    }
+    if (isBinLowering) {
+      let request = new ROSLIB.ServiceRequest({
         action_description_json: lowerBinConfig
       });
       let json = JSON.parse(request.action_description_json)
@@ -86,7 +84,18 @@ function formatGamepadState(axes, buttons) {
         console.log('Start action service called with action: ' + json.name + '.');
       });
     }
+    else {
+      let request = new ROSLIB.ServiceRequest({
+        action_description_json: raiseBinConfig
+      });
+      let json = JSON.parse(request.action_description_json)
+      startActionClient.callService(request, function(result) {
+        console.log('Start action service called with action: ' + json.name + '.');
+      });
+    } 
   }
+
+
 
 
   // let bucketHeight = calculateMotorPower(restVal, btY, btB);

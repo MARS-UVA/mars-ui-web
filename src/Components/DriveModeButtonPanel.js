@@ -8,22 +8,26 @@ import * as ROSLIB from 'roslib';
 import { registerResolver } from "@grpc/grpc-js/build/src/resolver";
 import { setStateClient, emergencyStopClient, motorCommandPublisher } from '../ros-setup';
 import { raiseBinConfig, lowerBinConfig } from "../action-configs/action_configs";
+import { startActionClient } from '../ros-setup';
 
 let isBinLowering = false;
 let bucketIsForward = true;
 let ladderRaisePower, blChainPower = 100;
+let restVal = 100;
+const MAX_POWER = 200;
+const NEUTRAL_POWER = 100;
+const MIN_POWER = 0;
+let dumpPower = 100;
+let binPower = 0;
+
 function formatGamepadState(axes, buttons) {
   //This code works with the Logitech Wireless Gamepad F710
-  const MAX_POWER = 200;
-  const NEUTRAL_POWER = 100;
-  const MIN_POWER = 0;
   let controllerMin = -1;
   let controllerMax = 1;
   let motorMin = -100;
   let motorMax = 100;
   let buttonInputMin = 0;
   let buttonInputMax = 1;
-  let restVal = 100;
   let reverseVal = 0;
 
   let buttonValueArray = buttons.map(button => button.value);
@@ -64,8 +68,8 @@ function formatGamepadState(axes, buttons) {
   }
 
 
-  checkLadderRaisePress(btY, btB);
-  checkBinRaisePress(btX, btA);
+  //checkLadderRaisePress(btY, btB);
+  //checkBinRaisePress(btX, btA);
 
   function processBinAngle(btY, btB) {
     if (btY) {
@@ -111,9 +115,9 @@ function formatGamepadState(axes, buttons) {
   let driveTurn = rightStickX;
 
   processBucketRotation(btLB, btLT, btRT);
-  processLadderAngle(leftStickY);
+  //processLadderAngle(leftStickY);
   processBinAngle(btY, btB);
-  processWebcamServo()
+  //processWebcamServo()
 
   return [driveLeft(driveForward, driveTurn), // front left wheel
           driveRight(driveForward, driveTurn), // front right wheel
@@ -151,11 +155,11 @@ function processBucketRotation(LB_val, LT_val, RT_val) {
 }
 
 function driveLeft(driveForward, driveTurn) {
-  return Math.max(Math.min(restVal + driveForward + driveTurn, MAX_CURRENT), 0);
+  return Math.max(Math.min(restVal + driveForward + driveTurn, MAX_POWER), 0);
 }
 
 function driveRight(driveForward, driveTurn) {
-  return Math.max(Math.min(restVal + driveForward - driveTurn, MAX_CURRENT), 0);
+  return Math.max(Math.min(restVal + driveForward - driveTurn, MAX_POWER), 0);
 }
 
 function mapValue(input, inputStart, inputEnd, outputStart, outputEnd) {

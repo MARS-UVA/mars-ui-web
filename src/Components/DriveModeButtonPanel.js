@@ -12,7 +12,8 @@ import { startActionClient } from '../ros-setup';
 
 let isBinLowering = false;
 let bucketIsForward = true;
-let ladderRaisePower, blChainPower = 100;
+let ladderRaisePower = 100
+let blChainPower = 100;
 let restVal = 100;
 const MAX_POWER = 200;
 const NEUTRAL_POWER = 100;
@@ -31,7 +32,7 @@ function formatGamepadState(axes, buttons) {
   let reverseVal = 0;
 
   let buttonValueArray = buttons.map(button => button.value);
-  axes = axes.map(value => mapValue(value, controllerMin, controllerMax, motorMin, motorMax));
+  axes = axes.map(value => mapValue(value, controllerMax, controllerMin, motorMin, motorMax));
   //buttonValueArray = buttonValueArray.map(value => mapValue(value, buttonInputMin, buttonInputMax, motorMin, motorMax));
 
   let leftStickX = axes[0];
@@ -59,7 +60,7 @@ function formatGamepadState(axes, buttons) {
   //mode switches 12-15 buttons and axes 0-1 between dpad and left stick, we want the mode where the light is off
   let driveForward = rightStickY;
   let driveTurn = rightStickX;
-  let ladderRaisePower = leftStickY + NEUTRAL_POWER;
+  ladderRaisePower = leftStickY + NEUTRAL_POWER;
 
   processBucketRotation(btLB, btLT, btRT);
   processBinAngle(btY, btB);
@@ -92,6 +93,7 @@ function processBinAngle(btY, btB) {
     startActionClient.callService(request, function(result) {
       console.log('Start action service called with action: ' + json.name + '.');
     });
+    binPower = 150;
   }
   else {
     let request = new ROSLIB.ServiceRequest({
@@ -101,6 +103,7 @@ function processBinAngle(btY, btB) {
     startActionClient.callService(request, function(result) {
       console.log('Start action service called with action: ' + json.name + '.');
     });
+    binPower = 50;
   }
 }
 
@@ -128,11 +131,11 @@ function processBucketRotation(LB_val, LT_val, RT_val) {
 }
 
 function driveLeft(driveForward, driveTurn) {
-  return Math.max(Math.min(restVal + driveForward + driveTurn, MAX_POWER), 0);
+  return Math.max(Math.min((restVal + driveForward + driveTurn), MAX_POWER), 0);
 }
 
 function driveRight(driveForward, driveTurn) {
-  return Math.max(Math.min(restVal + driveForward - driveTurn, MAX_POWER), 0);
+  return Math.max(Math.min((restVal + driveForward - driveTurn), MAX_POWER), 0);
 }
 
 function mapValue(input, inputStart, inputEnd, outputStart, outputEnd) {
@@ -156,7 +159,7 @@ export default function DriveModeButtonPanel() {
 
   // Inspired by https://dev.to/xtrp/a-complete-guide-to-the-html5-gamepad-api-2k
   window.addEventListener("gamepadconnected", (e) => {
-    console.log(`Gamepad connected at index ${e.gamepad.index}: ${e.gamepad.id}, ${e.gamepad.axes.length} axes, ${e.gamepad.buttons.length} buttons.`);
+    //console.log(`Gamepad connected at index ${e.gamepad.index}: ${e.gamepad.id}, ${e.gamepad.axes.length} axes, ${e.gamepad.buttons.length} buttons.`);
     setGamepadConnectedText(`Gamepad connected: ${e.gamepad.id}`);
   });
   window.addEventListener("gamepaddisconnected", (e) => {
@@ -176,7 +179,7 @@ export default function DriveModeButtonPanel() {
         return;
       }
       const myGamepad = navigator.getGamepads()[0]; // use the first gamepad
-      console.log(myGamepad);
+      //console.log(myGamepad);
       if(!myGamepad) {
         return;
       }

@@ -28,27 +28,17 @@ class HeroFeedbackPanel extends React.Component {
                 <>
                     <div class = "image-container">
                         <h4>Bucket Ladder Angles</h4>
-                        <p>Right: {this.props.rightAngle.toFixed(3)}</p>
-                        <p>Left: {this.props.leftAngle.toFixed(3)}</p>
-                        <h4>Deposit Bin Status</h4>
-                        <p>Raised: {this.props.binRaised}</p>
-                        <p>Lowered: {this.props.binLowered}</p>
+                        <p>Right: {this.props.rightActuator.toFixed(3)}</p>
+                        <p>Left: {this.props.leftActuator.toFixed(3)}</p>
+                        <h4>Chain Current</h4>
+                        <p>{this.props.chainCurrent}</p>
+                        <h4>Wheel Currents</h4>
+                        <p>Forward Left: {this.props.forwardLWheelCurrent.toFixed(3)}</p>
+                        <p>Rear Left: {this.props.rearLWheelCurrent.toFixed(3)}</p>
+                        <p>Forward Right: {this.props.forwardRWheelCurrent.toFixed(3)}</p>
+                        <p>Rear Right: {this.props.rearRWheelCurrent.toFixed(3)}</p>
                     </div>
                     <br></br>
-                    <div>
-                        <h4>Motor Currents</h4>
-                        {this.props.currents.map((current, index) => (
-
-                            <div>
-                                <FormControlLabel control={ <Checkbox
-                                    checked={this.state.checkboxStatuses[index]}
-                                    onChange={() => this.handleCheckboxChange(index)}
-                                    inputProps={{ 'aria-label': 'controlled' }}
-                                /> } label="" />
-                                Motor {index + 1}: {(this.state.checkboxStatuses[index] ? current.toFixed(3) : "")}
-                            </div>)
-                        )}
-                    </div>
                 </>
             </Grid>
         );

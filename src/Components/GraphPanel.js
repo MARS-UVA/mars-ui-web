@@ -11,11 +11,14 @@ export default function GraphPanel(){
     // ---------------
     // ensures that components will be redrawn when new values are received
 
-    const [leftAngle, setLeftAngle] = useState(30);
-    const [rightAngle, setRightAngle] = useState(30);
-    const [currents, setCurrents] = useState([0, 1, 2, 3, 4, 5, 6, 3, 8, 9]);
-    const [binRaised, setBinRaised] = useState("false");
-    const [binLowered, setBinLowered] = useState("false");
+    const [forwardLWheelCurrent, setForwardLWheelCurrent] = useState(0);
+    const [rearLWheelCurrent, setRearLWheelCurrent] = useState(0);
+    const [forwardRWheelCurrent, setForwardRWheelCurrent] = useState(0);
+    const [rearRWheelCurrent, setRearRWheelCurrent] = useState(0);
+
+    const [chainCurrent, setChainCurrent] = useState(0);
+    const [leftActuator, setLeftActuator] = useState(0);
+    const [rightActuator, setRightActuator] = useState(0);
 
     // Toggle data collection 
     // -----------------------
@@ -31,27 +34,26 @@ export default function GraphPanel(){
     useEffect(()=>{
         if(dataCollection){
             heroFeedbackSubscriber.subscribe(function(message) {
-                let heroMotorCurrents = message.currents;
-                let heroDepositBinRaised = message.depositBinRaised;
-                let heroDepositBinLowered = message.depositBinLowered;
-                let heroLadderAngleR = message.bucketLadderAngleR;
-                let heroLadderAngleL = message.bucketLadderAngleL;
+                let forwardLWheelCurrent = message.forwardLWheelCurrent;
+                let rearLWheelCurrent = message.rearLWheelCurrent;
+                let forwardRWheelCurrent = message.forwardRWheelCurrent;
+                let rearRWheelCurrent = message.rearRWheelCurrent;
+            
+                let chainCurrent = message.bucketLadderChainCurrent;
+                let leftActuator = message.bucketLadderLeftActuator;
+                let rightActuator = message.bucketLadderRightActuator;
+                
                
-                let motorCurrents = heroMotorCurrents;
-        
-                setLeftAngle(heroLadderAngleL);
-                setRightAngle(heroLadderAngleR);
-                setCurrents(motorCurrents);
-                if (heroDepositBinRaised) {
-                    setBinRaised("true");
-                } else {
-                    setBinRaised("false");
-                }
-                if (heroDepositBinLowered) {
-                    setBinLowered("true");
-                } else {
-                    setBinLowered("false");
-                }
+                setForwardLWheelCurrent(forwardLWheelCurrent);
+                setRearLWheelCurrent(rearLWheelCurrent);
+                setForwardRWheelCurrent(forwardRWheelCurrent);
+                setRearRWheelCurrent(rearRWheelCurrent);
+
+                setChainCurrent(chainCurrent);
+
+                setLeftActuator(leftActuator);
+                setRightActuator(rightActuator);
+                
             });
         }else{
             heroFeedbackSubscriber.unsubscribe()
@@ -71,11 +73,15 @@ export default function GraphPanel(){
     if (showData) {
         feedbackContent = 
         <HeroFeedbackPanel 
-            leftAngle={leftAngle} 
-            rightAngle={rightAngle}
-            currents={currents} 
-            binRaised={binRaised}
-            binLowered={binLowered}
+            forwardLWheelCurrent={forwardLWheelCurrent}
+            rearLWheelCurrent={rearLWheelCurrent}
+            forwardRWheelCurrent={forwardRWheelCurrent}
+            rearRWheelCurrent={rearRWheelCurrent}
+
+            chainCurrent={chainCurrent}
+
+            leftActuator={leftActuator} 
+            rightActuator={rightActuator}
             >
         </HeroFeedbackPanel>;
     }

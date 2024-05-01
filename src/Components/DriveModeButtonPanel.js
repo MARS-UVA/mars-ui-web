@@ -57,65 +57,11 @@ function formatGamepadState(axes, buttons) {
   let dPadRight = buttonValueArray[15];
 
   //mode switches 12-15 buttons and axes 0-1 between dpad and left stick, we want the mode where the light is off
-
-  //let ladderHeight = calculateMotorPower(restVal, btY, btB);
-  //let blChainPower = calculateMotorPower(restVal, btRT, 0);
-
-  if (btX == 100) {
-    dumpPower = 200;
-  } else if (btA == 100) {
-    dumpPower = 0;
-  }
-
-
-  //checkLadderRaisePress(btY, btB);
-  //checkBinRaisePress(btX, btA);
-
-  function processBinAngle(btY, btB) {
-    if (btY) {
-      isBinLowering = false;
-    }
-    if (btB) {
-      isBinLowering = true;
-    }
-    if (isBinLowering) {
-      let request = new ROSLIB.ServiceRequest({
-        action_description_json: lowerBinConfig
-      });
-      let json = JSON.parse(request.action_description_json)
-      startActionClient.callService(request, function(result) {
-        console.log('Start action service called with action: ' + json.name + '.');
-      });
-    }
-    else {
-      let request = new ROSLIB.ServiceRequest({
-        action_description_json: raiseBinConfig
-      });
-      let json = JSON.parse(request.action_description_json)
-      startActionClient.callService(request, function(result) {
-        console.log('Start action service called with action: ' + json.name + '.');
-      });
-    } 
-  }
-
-
-
-
-  // let bucketHeight = calculateMotorPower(restVal, btY, btB);
-  // let blChainPower = calculateMotorPower(restVal, btRT, 0);
-
-  // let dumpPower = 100
-  // if (btX == 100) {
-  //   dumpPower = 200;
-  // } else if (btA == 100) {
-  //   dumpPower = 0;
-  // }
-
   let driveForward = rightStickY;
   let driveTurn = rightStickX;
+  let ladderRaisePower = leftStickY + NEUTRAL_POWER;
 
   processBucketRotation(btLB, btLT, btRT);
-  //processLadderAngle(leftStickY);
   processBinAngle(btY, btB);
   //processWebcamServo()
 
@@ -129,6 +75,33 @@ function formatGamepadState(axes, buttons) {
           //DB angle
           //conveyer
         ]
+}
+
+function processBinAngle(btY, btB) {
+  if (btY) {
+    isBinLowering = false;
+  }
+  if (btB) {
+    isBinLowering = true;
+  }
+  if (isBinLowering) {
+    let request = new ROSLIB.ServiceRequest({
+      action_description_json: lowerBinConfig
+    });
+    let json = JSON.parse(request.action_description_json)
+    startActionClient.callService(request, function(result) {
+      console.log('Start action service called with action: ' + json.name + '.');
+    });
+  }
+  else {
+    let request = new ROSLIB.ServiceRequest({
+      action_description_json: raiseBinConfig
+    });
+    let json = JSON.parse(request.action_description_json)
+    startActionClient.callService(request, function(result) {
+      console.log('Start action service called with action: ' + json.name + '.');
+    });
+  }
 }
 
 function calculateMotorPower(restVal, forwardPower, reversePower) {

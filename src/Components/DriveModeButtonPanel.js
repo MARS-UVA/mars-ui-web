@@ -2,71 +2,76 @@ import React, { useEffect, useRef, useState } from "react";
 import ToggleButton from '@mui/material/ToggleButton';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import Typography from '@mui/material/Typography';
-import Grid from '@mui/material/Grid';
 import Button from '@mui/material/Button';
 import * as ROSLIB from 'roslib';
-import { registerResolver } from "@grpc/grpc-js/build/src/resolver";
 import { setStateClient, emergencyStopClient, motorCommandPublisher } from '../ros-setup';
-import { raiseBinConfig, lowerBinConfig } from "../action-configs/action_configs";
-import { startActionClient } from '../ros-setup';
+// import { raiseBinConfig, lowerBinConfig } from "../action-configs/action_configs";
+// import { startActionClient } from '../ros-setup';
 
-let isBinLowering = false;
-let bucketIsForward = true;
+// let isBinLowering = false;
+let isChainSpeedLocked = false;
 let ladderRaisePower = 100
 let blChainPower = 100;
 let restVal = 100;
 const MAX_POWER = 200;
 const NEUTRAL_POWER = 100;
-const MIN_POWER = 0;
-let dumpPower = 100;
+// const MIN_POWER = 0;
+// let dumpPower = 100;
 let binPower = 0;
 
 function formatGamepadState(axes, buttons) {
-  //This code works with the Logitech Wireless Gamepad F710
+  //This code works with the Logitech Wireless Gamepad F710 in XInput mode with mode light off
   let controllerMin = -1;
   let controllerMax = 1;
   let motorMin = -100;
   let motorMax = 100;
-  let buttonInputMin = 0;
-  let buttonInputMax = 1;
-  let reverseVal = 0;
+  let triggMin = 100;
+  let triggMax = 200;
+  // let buttonInputMin = 0;
+  // let buttonInputMax = 1;
+  // let reverseVal = 0;
 
   let bucketIsForward = 1;
   let bucketPower = 100;
   let binPower = 100;
 
   let buttonValueArray = buttons.map(button => button.value);
-  axes = axes.map(value => mapValue(value, controllerMax, controllerMin, motorMin, motorMax));
   //buttonValueArray = buttonValueArray.map(value => mapValue(value, buttonInputMin, buttonInputMax, motorMin, motorMax));
+  let stickAxes = axes.slice(1,4).map(value => mapValue(value, controllerMax, controllerMin, motorMin, motorMax));
+  let triggerAxes = axes.slice(4,6).map(value => mapValue(value, controllerMax, controllerMin, triggMin, triggMax));
+  axes = stickAxes.concat(triggerAxes);
 
-  let leftStickX = axes[0];
+  // let leftStickX = axes[0];
   let leftStickY = axes[1];
   let rightStickX = axes[2];
   let rightStickY = axes[3];
+  let rightTrigger = axes[4];
+  let leftTrigger = axes[5];
 
-  let btA = buttonValueArray[0];
+
+  //  btA = buttonValueArray[0];
   let btB = buttonValueArray[1];
-  let btX = buttonValueArray[2];
+  // let btX = buttonValueArray[2];
   let btY = buttonValueArray[3];
   let btLB = buttonValueArray[4];
   let btRB = buttonValueArray[5];
-  let btLT = buttonValueArray[6];
-  let btRT = buttonValueArray[7];
-  let back = buttonValueArray[8];
-  let start = buttonValueArray[9];
-  let leftStickClick = buttonValueArray[10];
-  let rightStickClick = buttonValueArray[11];
-  let dPadUp = buttonValueArray[12];
-  let dPadDown = buttonValueArray[13];
-  let dPadLeft = buttonValueArray[14];
-  let dPadRight = buttonValueArray[15];
+  //let leftTrigger = mapValue(buttonValueArray[6], 1, 0, 0, 100);
+  //let rightTrigger = mapValue(buttonValueArray[7], 0, 1, 100, 200);
+  // let back = buttonValueArray[8];
+  // let start = buttonValueArray[9];
+  // let leftStickClick = buttonValueArray[10];
+  // let rightStickClick = buttonValueArray[11];
+  // let dPadUp = buttonValueArray[12];
+  // let dPadDown = buttonValueArray[13];
+  // let dPadLeft = buttonValueArray[14];
+  // let dPadRight = buttonValueArray[15];
 
   //mode switches 12-15 buttons and axes 0-1 between dpad and left stick, we want the mode where the light is off
   let driveForward = rightStickY;
   let driveTurn = rightStickX;
   ladderRaisePower = leftStickY + NEUTRAL_POWER;
 
-  processBucketRotation(btLB, btLT, btRT);
+  processBucketRotation(btLB, btRB, leftTrigger, rightTrigger, 100);
   processBinAngle(btY, btB);
   //processWebcamServo()
 
@@ -84,35 +89,48 @@ function formatGamepadState(axes, buttons) {
 
 function processBinAngle(btY, btB) {
   if (btY) {
-    isBinLowering = false;
-  }
-  if (btB) {
-    isBinLowering = true;
-  }
-  if (isBinLowering) {
-    let request = new ROSLIB.ServiceRequest({
-      action_description_json: lowerBinConfig
-    });
-    let json = JSON.parse(request.action_description_json)
-    startActionClient.callService(request, function(result) {
-      console.log('Start action service called with action: ' + json.name + '.');
-    });
+    // isBinLowering = false;
     binPower = 150;
   }
-  else {
-    let request = new ROSLIB.ServiceRequest({
-      action_description_json: raiseBinConfig
-    });
-    let json = JSON.parse(request.action_description_json)
-    startActionClient.callService(request, function(result) {
-      console.log('Start action service called with action: ' + json.name + '.');
-    });
+  else if (btB) {
+    // isBinLowering = true;
     binPower = 50;
+  }
+  else {
+    binPower = 100;
   }
 }
 
-function calculateMotorPower(restVal, forwardPower, reversePower) {
-  return (forwardPower - reversePower);
+// function calculateMotorPower(restVal, forwardPower, reversePower) {
+//   return (forwardPower - reversePower);
+// }
+
+function processBucketRotation(LB_val, RB_val, LT_val, RT_val, neutral_val) {
+  
+  let left_button_pressed = LB_val === 1;
+  let right_button_pressed = RB_val === 1;
+  // toggle on/off the "locking" of the chain speed
+  if ((left_button_pressed || right_button_pressed) && !(left_button_pressed && right_button_pressed)) {
+    isChainSpeedLocked = !isChainSpeedLocked;
+    console.log(isChainSpeedLocked);
+  } 
+
+  // if the chain speed is allowed to change, update it
+  if(!isChainSpeedLocked) {
+    // if both triggers are pressed, ignore this input
+    if(LT_val !== neutral_val & RT_val === neutral_val) {
+      blChainPower = LT_val;
+    }
+
+    else if (LT_val === neutral_val & RT_val !== neutral_val) {
+      blChainPower = RT_val;
+    }
+
+    else {
+      blChainPower = neutral_val;
+    }
+
+  }
 }
 
 function driveLeft(driveForward, driveTurn) {
@@ -124,7 +142,7 @@ function driveRight(driveForward, driveTurn) {
 }
 
 function mapValue(input, inputStart, inputEnd, outputStart, outputEnd) {
-  return outputStart + ((outputEnd - outputStart) / (inputEnd - inputStart)) * (input - inputStart);
+  return Math.floor(outputStart + ((outputEnd - outputStart) / (inputEnd - inputStart)) * (input - inputStart));
 }
 
 function arraysEqual(a, b) {
@@ -140,6 +158,7 @@ export default function DriveModeButtonPanel() {
   const [driveMode, setDriveMode] = useState('idle');
   const [gamepadConnectedText, setGamepadConnectedText] = useState("No gamepad connected!");
   const gamepadState = useRef(null);
+  const [motorCommandValues, setMotorCommandValues] = useState("No motor commands yet sent.");
 
 
   // Inspired by https://dev.to/xtrp/a-complete-guide-to-the-html5-gamepad-api-2k
@@ -153,6 +172,14 @@ export default function DriveModeButtonPanel() {
 
   //onclick handler that updates state
   const handleChange = (event, newDriveMode) => {
+    // put motors in idle mode when drive state is changed
+    let newCommands = [100, 100, 100, 100, 100, 100, 100];
+    if(gamepadState.current == null || !arraysEqual(newCommands, gamepadState.current)) {
+      var message = new ROSLIB.Message({values: newCommands });
+      motorCommandPublisher.publish(message);
+      console.log("sending values to ros:", newCommands);
+      setMotorCommandValues(`Motor command values: ${newCommands}`);
+    }
     setDriveMode(newDriveMode);
   };
 
@@ -172,9 +199,10 @@ export default function DriveModeButtonPanel() {
       const newState = formatGamepadState(myGamepad.axes, myGamepad.buttons);
       if(gamepadState.current == null || !arraysEqual(newState, gamepadState.current)) {
         gamepadState.current = newState;
-        var message = new ROSLIB.Message({values: [Math.floor(newState[0]), Math.floor(newState[1]), Math.floor(newState[2]), Math.floor(newState[3]), Math.floor(newState[4]), Math.floor(newState[5]), Math.floor(newState[6])] });
+        var message = new ROSLIB.Message({values: [newState[0], Math.floor(newState[1]), Math.floor(newState[2]), Math.floor(newState[3]), Math.floor(newState[4]), Math.floor(newState[5]), Math.floor(newState[6])] });
         motorCommandPublisher.publish(message);
-        console.log("sending values to ros:", [Math.floor(newState[0]), Math.floor(newState[1]), Math.floor(newState[2]), Math.floor(newState[3]), Math.floor(newState[4]), Math.floor(newState[5]), Math.floor(newState[6])]);
+        console.log("sending values to ros:", [newState[0], Math.floor(newState[1]), Math.floor(newState[2]), Math.floor(newState[3]), Math.floor(newState[4]), Math.floor(newState[5]), Math.floor(newState[6])]);
+        setMotorCommandValues(`Motor command values: ${newState}`);
       }
     }, 200);
 
@@ -185,11 +213,11 @@ export default function DriveModeButtonPanel() {
       state: 0 // 0 corresponds to direct drive, 1 to autonomy, 2 to idle
     }); 
     
-    if(driveMode == "dd") {
+    if(driveMode === "dd") {
       request.state = 0;
-    } else if(driveMode == "autonomy"){
+    } else if(driveMode === "autonomy"){
       request.state = 1;
-    } else if(driveMode == "idle"){
+    } else if(driveMode === "idle"){
       request.state = 2;
     }
 
@@ -229,6 +257,8 @@ export default function DriveModeButtonPanel() {
       <Button sx={{ml:5}} variant="contained" size="large" color="error" onClick={()=>handleESTOP()}>ESTOP</Button>
       <br/>
       <small>{gamepadConnectedText}</small>
+      <br/>
+      <small>{motorCommandValues}</small>
     </div>
   );
 }

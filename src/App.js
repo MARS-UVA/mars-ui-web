@@ -4,6 +4,7 @@ import './App.css';
 import Typography from '@mui/material/Typography';
 import DriveModeButtonPanel from './Components/DriveModeButtonPanel';
 import './ros-setup';
+import GraphPanel from './Components/GraphPanel';
 
 function App() {
 
@@ -12,6 +13,8 @@ function App() {
       <Typography variant="h2">MARS Web UI</Typography>
       <br/>
       <DriveModeButtonPanel/>
+      <br />
+      <GraphPanel />
     </div>
   );
 }

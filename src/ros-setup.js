@@ -18,6 +18,7 @@ ros.on('connection', function() {
 ros.on('error', function(error) {
     connectionStatus = 'Error connecting to websocket server: ' + error;
     console.log(connectionStatus);
+    console.log(error);
 });
 
 ros.on('close', function() {
@@ -181,3 +182,11 @@ var videoSubscriber = new ROSLIB.Topic({
 });
 
 export { videoSubscriber };
+
+// var videoSubscriber = new ROSLIB.Topic({
+//   ros : ros,
+//   name : '/usb_cam/image_raw/compressed',
+//   messageType : 'sensor_msgs/CompressedImage'
+// });
+
+// export { videoSubscriber };

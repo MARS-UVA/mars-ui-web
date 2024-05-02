@@ -1,7 +1,7 @@
 import React from "react";
-import FormControlLabel from '@mui/material/FormControlLabel';
+// import FormControlLabel from '@mui/material/FormControlLabel';
 import Grid from '@mui/material/Grid';
-import Checkbox from '@mui/material/Checkbox';
+// import Checkbox from '@mui/material/Checkbox';
 
 class HeroFeedbackPanel extends React.Component {
 
@@ -9,18 +9,18 @@ class HeroFeedbackPanel extends React.Component {
       super(props);
 
       this.state = {
-        checkboxStatuses : new Array(this.props.currents.length).fill(true),
+        // checkboxStatuses : new Array(this.props.currents.length).fill(true),
       }
       
     }
 
-    handleCheckboxChange = (arrayIndex) => {
-        const updatedCheckedState = this.state.checkboxStatuses.map((item, index) =>
-            index === arrayIndex ? !item : item
-        );
+    // handleCheckboxChange = (arrayIndex) => {
+    //     const updatedCheckedState = this.state.checkboxStatuses.map((item, index) =>
+    //         index === arrayIndex ? !item : item
+    //     );
 
-        this.setState({checkboxStatuses: updatedCheckedState});
-    };
+    //     this.setState({checkboxStatuses: updatedCheckedState});
+    // };
 
     render() {
         return (

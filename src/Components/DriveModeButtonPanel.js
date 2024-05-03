@@ -20,23 +20,30 @@ const NEUTRAL_POWER = 100;
 let binPower = 0;
 
 function formatGamepadState(axes, buttons) {
-  //This code works with the Logitech Wireless Gamepad F710
+  //This code works with the Logitech Wireless Gamepad F710 in XInput mode with mode light off
   let controllerMin = -1;
   let controllerMax = 1;
   let motorMin = -100;
   let motorMax = 100;
+  let triggMin = 100;
+  let triggMax = 200;
   // let buttonInputMin = 0;
   // let buttonInputMax = 1;
   // let reverseVal = 0;
 
   let buttonValueArray = buttons.map(button => button.value);
-  axes = axes.map(value => mapValue(value, controllerMax, controllerMin, motorMin, motorMax));
   //buttonValueArray = buttonValueArray.map(value => mapValue(value, buttonInputMin, buttonInputMax, motorMin, motorMax));
+  stickAxes = axes.slice(1,4).map(value => mapValue(value, controllerMax, controllerMin, motorMin, motorMax));
+  triggerAxes = axes.slice(4,6).map(value => mapValue(value, controllerMax, controllerMin, triggMin, triggMax));
+  axes = stickAxes.concat(triggerAxes);
 
   // let leftStickX = axes[0];
   let leftStickY = axes[1];
   let rightStickX = axes[2];
   let rightStickY = axes[3];
+  let rightTrigger = axes[4];
+  let leftTrigger = axes[5];
+
 
   //  btA = buttonValueArray[0];
   let btB = buttonValueArray[1];
@@ -44,8 +51,8 @@ function formatGamepadState(axes, buttons) {
   let btY = buttonValueArray[3];
   let btLB = buttonValueArray[4];
   let btRB = buttonValueArray[5];
-  let btLT = mapValue(buttonValueArray[6], 1, 0, 0, 100);
-  let btRT = mapValue(buttonValueArray[7], 0, 1, 100, 200);
+  //let leftTrigger = mapValue(buttonValueArray[6], 1, 0, 0, 100);
+  //let rightTrigger = mapValue(buttonValueArray[7], 0, 1, 100, 200);
   // let back = buttonValueArray[8];
   // let start = buttonValueArray[9];
   // let leftStickClick = buttonValueArray[10];
@@ -60,7 +67,7 @@ function formatGamepadState(axes, buttons) {
   let driveTurn = rightStickX;
   ladderRaisePower = leftStickY + NEUTRAL_POWER;
 
-  processBucketRotation(btLB, btRB, btLT, btRT, 100);
+  processBucketRotation(btLB, btRB, leftTrigger, rightTrigger, 100);
   processBinAngle(btY, btB);
   //processWebcamServo()
 

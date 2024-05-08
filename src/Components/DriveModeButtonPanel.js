@@ -9,9 +9,11 @@ import { setStateClient, emergencyStopClient, motorCommandPublisher } from '../r
 // import { startActionClient } from '../ros-setup';
 
 // let isBinLowering = false;
-let isChainSpeedLocked = false;
+let isChainDirectionLocked = false;
 let ladderRaisePower = 100
 let blChainPower = 100;
+let blChainDirection = 0;
+let stepsAwayFromNeutral = 10;
 let restVal = 100;
 const MAX_POWER = 200;
 const NEUTRAL_POWER = 100;
@@ -64,8 +66,8 @@ function formatGamepadState(axes, buttons) {
   // let start = buttonValueArray[9];
   // let leftStickClick = buttonValueArray[10];
   // let rightStickClick = buttonValueArray[11];
-  // let dPadUp = buttonValueArray[12];
-  // let dPadDown = buttonValueArray[13];
+  let dPadUp = buttonValueArray[12];
+  let dPadDown = buttonValueArray[13];
   // let dPadLeft = buttonValueArray[14];
   // let dPadRight = buttonValueArray[15];
 
@@ -75,7 +77,7 @@ function formatGamepadState(axes, buttons) {
   ladderRaisePower = leftStickY + NEUTRAL_POWER;
 
   // processBucketRotation(btLB, btRB, leftTrigger, rightTrigger, 100);
-  processBucketRotation(btLB, btRB, btLT, btRT, 100);
+  processBucketRotation(btLB, btRB, btLT, btRT, dPadUp, dPadDown, 100);
   processBinAngle(btY, btB);
   //processWebcamServo()
 
@@ -109,32 +111,51 @@ function processBinAngle(btY, btB) {
 //   return (forwardPower - reversePower);
 // }
 
-function processBucketRotation(LB_val, RB_val, LT_val, RT_val, neutral_val) {
+function processBucketRotation(LB_val, RB_val, LT_val, RT_val, DP_up, DP_down, neutral_val) {
   
   let left_button_pressed = LB_val === 1;
   let right_button_pressed = RB_val === 1;
   // toggle on/off the "locking" of the chain speed
   if ((left_button_pressed || right_button_pressed) && !(left_button_pressed && right_button_pressed)) {
-    isChainSpeedLocked = !isChainSpeedLocked;
-    console.log(isChainSpeedLocked);
+    isChainDirectionLocked = !isChainDirectionLocked;
+    // console.log(isChainSpeedLocked);
   } 
 
-  // if the chain speed is allowed to change, update it
-  if(!isChainSpeedLocked) {
+  // if the chain direction is allowed to change, update it
+  if(!isChainDirectionLocked) {
     // if both triggers are pressed, ignore this input
     if(LT_val !== neutral_val & RT_val === neutral_val) {
-      blChainPower = LT_val;
+      blChainDirection = -1;
     }
 
     else if (LT_val === neutral_val & RT_val !== neutral_val) {
-      blChainPower = RT_val;
+      blChainDirection = 1;
     }
 
     else {
-      blChainPower = neutral_val;
+      blChainDirection = 0;
     }
 
   }
+
+
+  if(DP_up !== 0 & DP_down === 0) {
+    stepsAwayFromNeutral += 5;
+  }
+
+  else if (DP_up === 0 & DP_down !== 0) {
+    stepsAwayFromNeutral -= 5;
+  } 
+
+  if(stepsAwayFromNeutral < 0) {
+    stepsAwayFromNeutral = 0;
+  }
+  
+  if(stepsAwayFromNeutral > 100) {
+    stepsAwayFromNeutral = 100;
+  }
+
+  blChainPower = neutral_val + blChainDirection * stepsAwayFromNeutral;
 }
 
 function driveLeft(driveForward, driveTurn) {

@@ -39,7 +39,8 @@ function formatGamepadState(axes, buttons) {
   //buttonValueArray = buttonValueArray.map(value => mapValue(value, buttonInputMin, buttonInputMax, motorMin, motorMax));
   let stickAxes = axes.slice(1,4).map(value => mapValue(value, controllerMax, controllerMin, motorMin, motorMax));
   let triggerAxes = axes.slice(4,6).map(value => mapValue(value, controllerMax, controllerMin, triggMin, triggMax));
-  axes = stickAxes.concat(triggerAxes);
+  // axes = stickAxes.concat(triggerAxes);
+  axes = axes.map(value => mapValue(value, controllerMax, controllerMin, motorMin, motorMax));
 
   // let leftStickX = axes[0];
   let leftStickY = axes[1];
@@ -55,6 +56,8 @@ function formatGamepadState(axes, buttons) {
   let btY = buttonValueArray[3];
   let btLB = buttonValueArray[4];
   let btRB = buttonValueArray[5];
+  let btLT = mapValue(buttonValueArray[6], 1, 0, 0, 100);
+  let btRT = mapValue(buttonValueArray[7], 0, 1, 100, 200);
   //let leftTrigger = mapValue(buttonValueArray[6], 1, 0, 0, 100);
   //let rightTrigger = mapValue(buttonValueArray[7], 0, 1, 100, 200);
   // let back = buttonValueArray[8];
@@ -71,7 +74,8 @@ function formatGamepadState(axes, buttons) {
   let driveTurn = rightStickX;
   ladderRaisePower = leftStickY + NEUTRAL_POWER;
 
-  processBucketRotation(btLB, btRB, leftTrigger, rightTrigger, 100);
+  // processBucketRotation(btLB, btRB, leftTrigger, rightTrigger, 100);
+  processBucketRotation(btLB, btRB, btLT, btRT, 100);
   processBinAngle(btY, btB);
   //processWebcamServo()
 

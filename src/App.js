@@ -4,7 +4,8 @@ import './App.css';
 import Typography from '@mui/material/Typography';
 import DriveModeButtonPanel from './Components/DriveModeButtonPanel';
 import './ros-setup';
-import ActionPanel from "./Components/ActionPanel"
+import ActionPanel from "./Components/ActionPanel";
+import GraphPanel from './Components/GraphPanel';
 
 function App() {
 
@@ -15,7 +16,9 @@ function App() {
       <DriveModeButtonPanel/>
       <br/>
       <ActionPanel/>
-    </div>
+      <br/>
+      <GraphPanel />
+  </div>
   );
 }
 

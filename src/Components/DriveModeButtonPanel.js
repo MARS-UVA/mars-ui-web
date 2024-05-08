@@ -20,6 +20,7 @@ const NEUTRAL_POWER = 100;
 // const MIN_POWER = 0;
 // let dumpPower = 100;
 let binPower = 0;
+let wheelDifferentialFactor = 1.0;
 
 function formatGamepadState(axes, buttons) {
   //This code works with the Logitech Wireless Gamepad F710 in XInput mode with mode light off
@@ -35,13 +36,14 @@ function formatGamepadState(axes, buttons) {
 
   let bucketIsForward = 1;
   let bucketPower = 100;
-  let binPower = 100;
+  binPower = 100;
 
   let buttonValueArray = buttons.map(button => button.value);
   //buttonValueArray = buttonValueArray.map(value => mapValue(value, buttonInputMin, buttonInputMax, motorMin, motorMax));
   let stickAxes = axes.slice(1,4).map(value => mapValue(value, controllerMax, controllerMin, motorMin, motorMax));
   let triggerAxes = axes.slice(4,6).map(value => mapValue(value, controllerMax, controllerMin, triggMin, triggMax));
   // axes = stickAxes.concat(triggerAxes);
+  axes = axes.map(value => Math.pow(value, 3));
   axes = axes.map(value => mapValue(value, controllerMax, controllerMin, motorMin, motorMax));
 
   // let leftStickX = axes[0];
@@ -81,10 +83,10 @@ function formatGamepadState(axes, buttons) {
   processBinAngle(btY, btB);
   //processWebcamServo()
 
-  return [driveLeft(driveForward, driveTurn), // front left wheel
-          driveRight(driveForward, driveTurn), // front right wheel
-          driveLeft(driveForward, driveTurn), // back left wheel
-          driveRight(driveForward, driveTurn), // back right wheel
+  return [driveLeft(driveForward, driveTurn, 1), // front left wheel
+          driveRight(driveForward, driveTurn, 1), // front right wheel
+          driveLeft(driveForward, driveTurn, wheelDifferentialFactor), // back left wheel
+          driveRight(driveForward, driveTurn, wheelDifferentialFactor), // back right wheel
           ladderRaisePower,
           blChainPower,
           binPower,
@@ -94,16 +96,21 @@ function formatGamepadState(axes, buttons) {
 }
 
 function processBinAngle(btY, btB) {
+  //console.log(btY);
+  //console.log(btB);
   if (btY) {
     // isBinLowering = false;
     binPower = 150;
+    console.log('raising');
   }
   else if (btB) {
     // isBinLowering = true;
     binPower = 50;
+    console.log('lowering');
   }
   else {
     binPower = 100;
+    console.log('neutral');
   }
 }
 
@@ -158,12 +165,12 @@ function processBucketRotation(LB_val, RB_val, LT_val, RT_val, DP_up, DP_down, n
   blChainPower = neutral_val + blChainDirection * stepsAwayFromNeutral;
 }
 
-function driveLeft(driveForward, driveTurn) {
-  return Math.max(Math.min((restVal + driveForward + driveTurn), MAX_POWER), 0);
+function driveLeft(driveForward, driveTurn, factor) {
+  return Math.floor(Math.max(Math.min((restVal + (driveForward - driveTurn)*factor), MAX_POWER), 0));
 }
 
-function driveRight(driveForward, driveTurn) {
-  return Math.max(Math.min((restVal + driveForward - driveTurn), MAX_POWER), 0);
+function driveRight(driveForward, driveTurn, factor) {
+  return Math.floor(Math.max(Math.min((restVal + (driveForward + driveTurn)*factor), MAX_POWER), 0));
 }
 
 function mapValue(input, inputStart, inputEnd, outputStart, outputEnd) {

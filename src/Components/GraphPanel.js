@@ -16,9 +16,9 @@ export default function GraphPanel(){
     const [forwardRWheelCurrent, setForwardRWheelCurrent] = useState(0);
     const [rearRWheelCurrent, setRearRWheelCurrent] = useState(0);
 
-    const [chainCurrent, setChainCurrent] = useState(0);
-    const [leftActuator, setLeftActuator] = useState(0);
-    const [rightActuator, setRightActuator] = useState(0);
+    const [bucketLadderChainCurrent, setBucketLadderChainCurrent] = useState(0);
+    const [bucketLadderActuatorCurrent, setBucketLadderActuatorCurrent] = useState(0);
+    const [constructionBinActuatorCurrent, setConstructionBinActuatorCurrent] = useState(0);
 
     // Toggle data collection 
     // -----------------------
@@ -39,9 +39,9 @@ export default function GraphPanel(){
                 let forwardRWheelCurrent = message.forwardRWheelCurrent;
                 let rearRWheelCurrent = message.rearRWheelCurrent;
             
-                let chainCurrent = message.bucketLadderChainCurrent;
-                let leftActuator = message.bucketLadderLeftActuator;
-                let rightActuator = message.bucketLadderRightActuator;
+                let bucketLadderChainCurrent = message.bucketLadderChainCurrent;
+                let bucketLadderActuatorCurrent = message.bucketLadderActuatorCurrent;
+                let constructionBinActuatorCurrent = message.constructionBinActuatorCurrent;
                 
                
                 setForwardLWheelCurrent(forwardLWheelCurrent);
@@ -49,10 +49,10 @@ export default function GraphPanel(){
                 setForwardRWheelCurrent(forwardRWheelCurrent);
                 setRearRWheelCurrent(rearRWheelCurrent);
 
-                setChainCurrent(chainCurrent);
+                setBucketLadderChainCurrent(bucketLadderChainCurrent);
 
-                setLeftActuator(leftActuator);
-                setRightActuator(rightActuator);
+                setBucketLadderActuatorCurrent(bucketLadderActuatorCurrent);
+                setConstructionBinActuatorCurrent(constructionBinActuatorCurrent);
                 
             });
         }else{
@@ -78,10 +78,10 @@ export default function GraphPanel(){
             forwardRWheelCurrent={forwardRWheelCurrent}
             rearRWheelCurrent={rearRWheelCurrent}
 
-            chainCurrent={chainCurrent}
+            bucketLadderChainCurrent={bucketLadderChainCurrent}
 
-            leftActuator={leftActuator} 
-            rightActuator={rightActuator}
+            bucketLadderActuatorCurrent={bucketLadderActuatorCurrent} 
+            constructionBinActuatorCurrent={constructionBinActuatorCurrent}
             >
         </HeroFeedbackPanel>;
     }

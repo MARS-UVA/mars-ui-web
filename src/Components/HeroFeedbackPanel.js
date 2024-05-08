@@ -27,11 +27,11 @@ class HeroFeedbackPanel extends React.Component {
             <Grid container>
                 <>
                     <div class = "image-container">
-                        <h4>Bucket Ladder Angles</h4>
-                        <p>Right: {this.props.rightActuator.toFixed(3)}</p>
-                        <p>Left: {this.props.leftActuator.toFixed(3)}</p>
+                        <h4>Actuator Currents</h4>
+                        <p>Bucket Ladder: {this.props.bucketLadderActuatorCurrent.toFixed(3)}</p>
+                        <p>Construction Bin: {this.props.constructionBinActuatorCurrent.toFixed(3)}</p>
                         <h4>Chain Current</h4>
-                        <p>{this.props.chainCurrent}</p>
+                        <p>{this.props.bucketLadderActuatorCurrent}</p>
                         <h4>Wheel Currents</h4>
                         <p>Forward Left: {this.props.forwardLWheelCurrent.toFixed(3)}</p>
                         <p>Rear Left: {this.props.rearLWheelCurrent.toFixed(3)}</p>

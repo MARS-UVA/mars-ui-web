@@ -16,9 +16,9 @@ function App() {
       <DriveModeButtonPanel/>
       <br/>
       <ActionPanel/>
-      <br />
+      <br/>
       <GraphPanel />
-    </div>
+  </div>
   );
 }
 

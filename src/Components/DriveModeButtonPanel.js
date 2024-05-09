@@ -9,15 +9,18 @@ import { setStateClient, emergencyStopClient, motorCommandPublisher } from '../r
 // import { startActionClient } from '../ros-setup';
 
 // let isBinLowering = false;
-let isChainSpeedLocked = false;
+let isChainDirectionLocked = false;
 let ladderRaisePower = 100
 let blChainPower = 100;
+let blChainDirection = 0;
+let stepsAwayFromNeutral = 10;
 let restVal = 100;
 const MAX_POWER = 200;
 const NEUTRAL_POWER = 100;
 // const MIN_POWER = 0;
 // let dumpPower = 100;
 let binPower = 0;
+let wheelDifferentialFactor = 1.0;
 
 function formatGamepadState(axes, buttons) {
   //This code works with the Logitech Wireless Gamepad F710 in XInput mode with mode light off
@@ -33,13 +36,14 @@ function formatGamepadState(axes, buttons) {
 
   let bucketIsForward = 1;
   let bucketPower = 100;
-  let binPower = 100;
+  binPower = 100;
 
   let buttonValueArray = buttons.map(button => button.value);
   //buttonValueArray = buttonValueArray.map(value => mapValue(value, buttonInputMin, buttonInputMax, motorMin, motorMax));
   let stickAxes = axes.slice(1,4).map(value => mapValue(value, controllerMax, controllerMin, motorMin, motorMax));
   let triggerAxes = axes.slice(4,6).map(value => mapValue(value, controllerMax, controllerMin, triggMin, triggMax));
   // axes = stickAxes.concat(triggerAxes);
+  axes = axes.map(value => Math.pow(value, 3));
   axes = axes.map(value => mapValue(value, controllerMax, controllerMin, motorMin, motorMax));
 
   // let leftStickX = axes[0];
@@ -64,8 +68,8 @@ function formatGamepadState(axes, buttons) {
   // let start = buttonValueArray[9];
   // let leftStickClick = buttonValueArray[10];
   // let rightStickClick = buttonValueArray[11];
-  // let dPadUp = buttonValueArray[12];
-  // let dPadDown = buttonValueArray[13];
+  let dPadUp = buttonValueArray[12];
+  let dPadDown = buttonValueArray[13];
   // let dPadLeft = buttonValueArray[14];
   // let dPadRight = buttonValueArray[15];
 
@@ -75,14 +79,14 @@ function formatGamepadState(axes, buttons) {
   ladderRaisePower = leftStickY + NEUTRAL_POWER;
 
   // processBucketRotation(btLB, btRB, leftTrigger, rightTrigger, 100);
-  processBucketRotation(btLB, btRB, btLT, btRT, 100);
+  processBucketRotation(btLB, btRB, btLT, btRT, dPadUp, dPadDown, 100);
   processBinAngle(btY, btB);
   //processWebcamServo()
 
-  return [driveLeft(driveForward, driveTurn), // front left wheel
-          driveRight(driveForward, driveTurn), // front right wheel
-          driveLeft(driveForward, driveTurn), // back left wheel
-          driveRight(driveForward, driveTurn), // back right wheel
+  return [driveLeft(driveForward, driveTurn, 1), // front left wheel
+          driveRight(driveForward, driveTurn, 1), // front right wheel
+          driveLeft(driveForward, driveTurn, wheelDifferentialFactor), // back left wheel
+          driveRight(driveForward, driveTurn, wheelDifferentialFactor), // back right wheel
           ladderRaisePower,
           blChainPower,
           binPower,
@@ -92,16 +96,21 @@ function formatGamepadState(axes, buttons) {
 }
 
 function processBinAngle(btY, btB) {
+  //console.log(btY);
+  //console.log(btB);
   if (btY) {
     // isBinLowering = false;
     binPower = 150;
+    console.log('raising');
   }
   else if (btB) {
     // isBinLowering = true;
     binPower = 50;
+    console.log('lowering');
   }
   else {
     binPower = 100;
+    console.log('neutral');
   }
 }
 
@@ -109,40 +118,59 @@ function processBinAngle(btY, btB) {
 //   return (forwardPower - reversePower);
 // }
 
-function processBucketRotation(LB_val, RB_val, LT_val, RT_val, neutral_val) {
+function processBucketRotation(LB_val, RB_val, LT_val, RT_val, DP_up, DP_down, neutral_val) {
   
   let left_button_pressed = LB_val === 1;
   let right_button_pressed = RB_val === 1;
   // toggle on/off the "locking" of the chain speed
   if ((left_button_pressed || right_button_pressed) && !(left_button_pressed && right_button_pressed)) {
-    isChainSpeedLocked = !isChainSpeedLocked;
-    console.log(isChainSpeedLocked);
+    isChainDirectionLocked = !isChainDirectionLocked;
+    // console.log(isChainSpeedLocked);
   } 
 
-  // if the chain speed is allowed to change, update it
-  if(!isChainSpeedLocked) {
+  // if the chain direction is allowed to change, update it
+  if(!isChainDirectionLocked) {
     // if both triggers are pressed, ignore this input
     if(LT_val !== neutral_val & RT_val === neutral_val) {
-      blChainPower = LT_val;
+      blChainDirection = -1;
     }
 
     else if (LT_val === neutral_val & RT_val !== neutral_val) {
-      blChainPower = RT_val;
+      blChainDirection = 1;
     }
 
     else {
-      blChainPower = neutral_val;
+      blChainDirection = 0;
     }
 
   }
+
+
+  if(DP_up !== 0 & DP_down === 0) {
+    stepsAwayFromNeutral += 5;
+  }
+
+  else if (DP_up === 0 & DP_down !== 0) {
+    stepsAwayFromNeutral -= 5;
+  } 
+
+  if(stepsAwayFromNeutral < 0) {
+    stepsAwayFromNeutral = 0;
+  }
+  
+  if(stepsAwayFromNeutral > 100) {
+    stepsAwayFromNeutral = 100;
+  }
+
+  blChainPower = neutral_val + blChainDirection * stepsAwayFromNeutral;
 }
 
-function driveLeft(driveForward, driveTurn) {
-  return Math.max(Math.min((restVal + driveForward + driveTurn), MAX_POWER), 0);
+function driveLeft(driveForward, driveTurn, factor) {
+  return Math.floor(Math.max(Math.min((restVal + (driveForward - driveTurn)*factor), MAX_POWER), 0));
 }
 
-function driveRight(driveForward, driveTurn) {
-  return Math.max(Math.min((restVal + driveForward - driveTurn), MAX_POWER), 0);
+function driveRight(driveForward, driveTurn, factor) {
+  return Math.floor(Math.max(Math.min((restVal + (driveForward + driveTurn)*factor), MAX_POWER), 0));
 }
 
 function mapValue(input, inputStart, inputEnd, outputStart, outputEnd) {

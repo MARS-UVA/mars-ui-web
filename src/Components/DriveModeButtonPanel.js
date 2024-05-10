@@ -90,8 +90,8 @@ function formatGamepadState(axes, buttons) {
           ladderRaisePower,
           blChainPower,
           binPower,
-          //DB angle
-          //conveyer
+          100, // webcam servo
+          0 //ir servo
         ]
 }
 

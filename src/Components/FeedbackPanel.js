@@ -3,7 +3,7 @@ import React from "react";
 import Grid from '@mui/material/Grid';
 // import Checkbox from '@mui/material/Checkbox';
 
-class HeroFeedbackPanel extends React.Component {
+class FeedbackPanel extends React.Component {
 
     constructor(props) {
       super(props);
@@ -27,16 +27,21 @@ class HeroFeedbackPanel extends React.Component {
             <Grid container>
                 <>
                     <div class = "image-container">
-                        <h4>Actuator Currents</h4>
-                        <p>Bucket Ladder: {this.props.bucketLadderActuatorCurrent.toFixed(3)}</p>
-                        <p>Construction Bin: {this.props.constructionBinActuatorCurrent.toFixed(3)}</p>
-                        <h4>Chain Current</h4>
-                        <p>{this.props.bucketLadderActuatorCurrent}</p>
+                        <h4>Limit Switches Triggered?</h4>
+                        <p>Bucket Ladder: {this.props.bucketContact.toFixed(3)}</p>
+                        <p>Construction Bin: {this.props.constructionBinContact.toFixed(3)}</p>
+                        <h4>IR Reading</h4>
+                        <p>{this.props.irReading}</p>
                         <h4>Wheel Currents</h4>
                         <p>Forward Left: {this.props.forwardLWheelCurrent.toFixed(3)}</p>
                         <p>Rear Left: {this.props.rearLWheelCurrent.toFixed(3)}</p>
                         <p>Forward Right: {this.props.forwardRWheelCurrent.toFixed(3)}</p>
                         <p>Rear Right: {this.props.rearRWheelCurrent.toFixed(3)}</p>
+                        <h4>Actuator Currents</h4>
+                        <p>Bucket Ladder: {this.props.bucketLadderActuatorCurrent.toFixed(3)}</p>
+                        <p>Construction Bin: {this.props.constructionBinActuatorCurrent.toFixed(3)}</p>
+                        <h4>Chain Current</h4>
+                        <p>{this.props.bucketLadderActuatorCurrent}</p>
                     </div>
                     <br></br>
                 </>
@@ -45,4 +50,4 @@ class HeroFeedbackPanel extends React.Component {
     }
 }
 
-export default HeroFeedbackPanel;
+export default FeedbackPanel;

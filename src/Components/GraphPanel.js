@@ -2,8 +2,8 @@ import React, { useState, useEffect } from "react";
 import Checkbox from '@mui/material/Checkbox';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Grid from '@mui/material/Grid';
-import { heroFeedbackSubscriber } from "../ros-setup";
-import HeroFeedbackPanel from './HeroFeedbackPanel';
+import { heroFeedbackSubscriber, irSubscriber, digitalFeedbackGpioSubscriber } from "../ros-setup";
+import FeedbackPanel from './FeedbackPanel';
 
 export default function GraphPanel(){
 
@@ -19,6 +19,11 @@ export default function GraphPanel(){
     const [bucketLadderChainCurrent, setBucketLadderChainCurrent] = useState(0);
     const [bucketLadderActuatorCurrent, setBucketLadderActuatorCurrent] = useState(0);
     const [constructionBinActuatorCurrent, setConstructionBinActuatorCurrent] = useState(0);
+
+    const [irReading, setIrReading] = useState(0);
+
+    const [bucketContact, setBucketContact] = useState(false);
+    const [constructionBinContact, setConstructionBinContact] = useState(false);
 
     // Toggle data collection 
     // -----------------------
@@ -55,6 +60,21 @@ export default function GraphPanel(){
                 setConstructionBinActuatorCurrent(constructionBinActuatorCurrent);
                 
             });
+
+            irSubscriber.subscribe(function(message) {
+                let ir_reading = message;
+                    
+                setIrReading(ir_reading); 
+            });
+
+            digitalFeedbackGpioSubscriber.subscribe(function(message) {
+                let bucket_contact = message.bucket_contact;
+                let construction_bin_contact = message.construction_bin_contact;
+                    
+                setBucketContact(bucket_contact); 
+                setConstructionBinContact(construction_bin_contact);
+            });
+
         }else{
             heroFeedbackSubscriber.unsubscribe()
         }
@@ -72,7 +92,13 @@ export default function GraphPanel(){
     let feedbackContent = <p></p>;
     if (showData) {
         feedbackContent = 
-        <HeroFeedbackPanel 
+        <FeedbackPanel 
+
+            bucketContact={bucketContact}
+            constructionBinContact={constructionBinContact}
+
+            irReading={irReading}
+
             forwardLWheelCurrent={forwardLWheelCurrent}
             rearLWheelCurrent={rearLWheelCurrent}
             forwardRWheelCurrent={forwardRWheelCurrent}
@@ -83,7 +109,7 @@ export default function GraphPanel(){
             bucketLadderActuatorCurrent={bucketLadderActuatorCurrent} 
             constructionBinActuatorCurrent={constructionBinActuatorCurrent}
             >
-        </HeroFeedbackPanel>;
+        </FeedbackPanel>;
     }
 
     // Build UI components

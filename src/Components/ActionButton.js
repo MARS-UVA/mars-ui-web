@@ -4,7 +4,7 @@ import Button from '@mui/material/Button';
 import * as ROSLIB from 'roslib';
 import { startActionClient } from '../ros-setup';
 import '../action-configs/action_configs';
-import { digConfig, raiseLadderConfig, lowerLadderConfig, raiseBinConfig, lowerBinConfig, notFoundConfig } from "../action-configs/action_configs";
+import { dumpConfig, digConfig, raiseLadderConfig, lowerLadderConfig, raiseBinConfig, lowerBinConfig, notFoundConfig } from "../action-configs/action_configs";
 
 export default function ActionButton({label, type}){
 
@@ -24,7 +24,10 @@ export default function ActionButton({label, type}){
             break;
         case "dig":
             action_description = digConfig;
-	    break;
+	        break;
+        case "dump":
+            action_description = dumpConfig;
+            break;
         default:
 	    action_description = notFoundConfig;
 	    break;

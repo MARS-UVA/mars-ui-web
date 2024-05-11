@@ -11,5 +11,6 @@ export default function ActionPanel(){
         <ActionButton label={"Raise Deposit Bin"} type={"raise_bin"}/>
         <ActionButton label={"Lower Deposit Bin"} type={"lower_bin"}/>
         <ActionButton label={"Dig"} type={"dig"}/>
+        <ActionButton label={"Dump"} type={"dump"}/>
     </Grid>);
 }

@@ -37,6 +37,13 @@ var digConfig = "{ \
 }";
 export { digConfig };
 
+var dumpConfig = "{ \
+    \"name\": \"dump\", \
+    \"update_delay\": 0.05, \
+    \"speed\": 10, \
+    \"lowered_angle\": 40 \
+}";
+
 var notFoundConfig = "{ \
     \"name\": \"NotFound\", \
     \"states\": -1 \

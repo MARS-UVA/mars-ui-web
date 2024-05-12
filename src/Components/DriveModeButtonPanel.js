@@ -17,6 +17,7 @@ let stepsAwayFromNeutral = 10;
 let restVal = 100;
 const MAX_POWER = 200;
 const NEUTRAL_POWER = 100;
+const NEUTRAL_THRESHOLD = 10;
 // const MIN_POWER = 0;
 // let dumpPower = 100;
 let binPower = 0;
@@ -75,6 +76,7 @@ function formatGamepadState(axes, buttons) {
 
   //mode switches 12-15 buttons and axes 0-1 between dpad and left stick, we want the mode where the light is off
   let driveForward = rightStickY;
+  let reverseDirectionMultiplier = driveForward > 100 ? 1 : -1;
   let driveTurn = rightStickX;
   ladderRaisePower = leftStickY + NEUTRAL_POWER;
 
@@ -83,14 +85,14 @@ function formatGamepadState(axes, buttons) {
   processBinAngle(btY, btB);
   //processWebcamServo()
 
-  return [driveLeft(driveForward, driveTurn, 1), // front left wheel
-          driveRight(driveForward, driveTurn, 1), // front right wheel
-          driveLeft(driveForward, driveTurn, wheelDifferentialFactor), // back left wheel
-          driveRight(driveForward, driveTurn, wheelDifferentialFactor), // back right wheel
+  return [driveLeft(driveForward, reverseDirectionMultiplier*driveTurn, 1), // front left wheel
+          driveRight(driveForward, reverseDirectionMultiplier*driveTurn, 1), // front right wheel
+          driveLeft(driveForward, reverseDirectionMultiplier*driveTurn, wheelDifferentialFactor), // back left wheel
+          driveRight(driveForward, reverseDirectionMultiplier*driveTurn, wheelDifferentialFactor), // back right wheel
           ladderRaisePower,
           blChainPower,
           binPower,
-          100, // webcam servo
+          0, // webcam servo
           0 //ir servo
         ]
 }
@@ -166,15 +168,20 @@ function processBucketRotation(LB_val, RB_val, LT_val, RT_val, DP_up, DP_down, n
 }
 
 function driveLeft(driveForward, driveTurn, factor) {
-  return Math.floor(Math.max(Math.min((restVal + (driveForward - driveTurn)*factor), MAX_POWER), 0));
-}
-
-function driveRight(driveForward, driveTurn, factor) {
   return Math.floor(Math.max(Math.min((restVal + (driveForward + driveTurn)*factor), MAX_POWER), 0));
 }
 
+function driveRight(driveForward, driveTurn, factor) {
+  return Math.floor(Math.max(Math.min((restVal + (driveForward - driveTurn)*factor), MAX_POWER), 0));
+}
+
 function mapValue(input, inputStart, inputEnd, outputStart, outputEnd) {
-  return Math.floor(outputStart + ((outputEnd - outputStart) / (inputEnd - inputStart)) * (input - inputStart));
+  let mappedVal = Math.floor(outputStart + ((outputEnd - outputStart) / (inputEnd - inputStart)) * (input - inputStart));
+  let neutralVal = (outputStart - outputEnd)/2 + outputStart;
+  if (Math.abs(mappedVal - neutralVal) < NEUTRAL_THRESHOLD){
+    mappedVal = neutralVal;
+  }
+  return mappedVal;
 }
 
 function arraysEqual(a, b) {

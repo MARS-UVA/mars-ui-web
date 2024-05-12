@@ -49,10 +49,6 @@ export { motorCommandPublisher };
 // Subcribe to HERO board feedback
 // --------------------------------
 
-var heroMotorCurrents;
-var heroLadderAngle;
-var heroDepositBinRaised;
-
 var heroFeedbackSubscriber = new ROSLIB.Topic({
   ros : ros,
   name : '/motor/feedback',
@@ -76,6 +72,41 @@ heroFeedbackSubscriber.subscribe(function(message) {
 
 
 export { heroFeedbackSubscriber };
+
+// Subscribe to Jetson GPIO feedback
+// --------------------------------
+
+var digitalFeedbackGpioSubscriber = new ROSLIB.Topic({
+  ros : ros,
+  name : '/gpio',
+  messageType : 'actions/DigitalFeedbackGpio'
+});
+
+export { digitalFeedbackGpioSubscriber };
+
+
+// Subscribe to IR feedback
+// --------------------------------
+
+var irSubscriber = new ROSLIB.Topic({
+  ros : ros,
+  name : '/ir_adc_readings',
+  messageType : 'std_msgs/Int32'
+});
+
+export { irSubscriber };
+
+
+// Subscribe to bucker ladder angle feedback
+// --------------------------------
+
+var ladderAngleSubscriber = new ROSLIB.Topic({
+  ros : ros,
+  name : '/ladder_angle',
+  messageType : 'actions/LadderAngle'
+});
+
+export { ladderAngleSubscriber };
 
 
 // Set state service

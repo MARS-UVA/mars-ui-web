@@ -43,6 +43,7 @@ var dumpConfig = "{ \
     \"speed\": 10, \
     \"lowered_angle\": 40 \
 }";
+export { dumpConfig }; 
 
 var notFoundConfig = "{ \
     \"name\": \"NotFound\", \

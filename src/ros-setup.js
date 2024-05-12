@@ -49,10 +49,6 @@ export { motorCommandPublisher };
 // Subcribe to HERO board feedback
 // --------------------------------
 
-var heroMotorCurrents;
-var heroLadderAngle;
-var heroDepositBinRaised;
-
 var heroFeedbackSubscriber = new ROSLIB.Topic({
   ros : ros,
   name : '/motor/feedback',
@@ -95,7 +91,7 @@ export { digitalFeedbackGpioSubscriber };
 var irSubscriber = new ROSLIB.Topic({
   ros : ros,
   name : '/ir_adc_readings',
-  messageType : Int32
+  messageType : 'std_msgs/Int32'
 });
 
 export { irSubscriber };

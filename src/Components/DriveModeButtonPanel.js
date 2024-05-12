@@ -96,8 +96,8 @@ function formatGamepadState(axes, buttons) {
           ladderRaisePower,
           blChainPower,
           binPower,
-          cameraServoAngle,
-          irServoAngle
+          irServoAngle,
+          cameraServoAngle
         ]
 }
 
@@ -107,16 +107,16 @@ function processBinAngle(btY, btB) {
   if (btY) {
     // isBinLowering = false;
     binPower = 150;
-    console.log('raising');
+    // console.log('raising');
   }
   else if (btB) {
     // isBinLowering = true;
     binPower = 50;
-    console.log('lowering');
+    // console.log('lowering');
   }
   else {
     binPower = 100;
-    console.log('neutral');
+    // console.log('neutral');
   }
 }
 

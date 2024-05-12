@@ -251,7 +251,7 @@ export default function DriveModeButtonPanel() {
   //onclick handler that updates state
   const handleChange = (event, newDriveMode) => {
     // put motors in idle mode when drive state is changed
-    let newCommands = [100, 100, 100, 100, 100, 100, 100];
+    let newCommands = [100, 100, 100, 100, 100, 100, 100, 0, 0];
     if(gamepadState.current == null || !arraysEqual(newCommands, gamepadState.current)) {
       var message = new ROSLIB.Message({values: newCommands });
       motorCommandPublisher.publish(message);
@@ -277,9 +277,9 @@ export default function DriveModeButtonPanel() {
       const newState = formatGamepadState(myGamepad.axes, myGamepad.buttons);
       if(gamepadState.current == null || !arraysEqual(newState, gamepadState.current)) {
         gamepadState.current = newState;
-        var message = new ROSLIB.Message({values: [newState[0], Math.floor(newState[1]), Math.floor(newState[2]), Math.floor(newState[3]), Math.floor(newState[4]), Math.floor(newState[5]), Math.floor(newState[6])] });
+        var message = new ROSLIB.Message({values: [Math.floor(newState[0]), Math.floor(newState[1]), Math.floor(newState[2]), Math.floor(newState[3]), Math.floor(newState[4]), Math.floor(newState[5]), Math.floor(newState[6]), Math.floor(newState[7]), Math.floor(newState[8])] });
         motorCommandPublisher.publish(message);
-        console.log("sending values to ros:", [newState[0], Math.floor(newState[1]), Math.floor(newState[2]), Math.floor(newState[3]), Math.floor(newState[4]), Math.floor(newState[5]), Math.floor(newState[6])]);
+        console.log("sending values to ros:", [Math.floor(newState[0]), Math.floor(newState[1]), Math.floor(newState[2]), Math.floor(newState[3]), Math.floor(newState[4]), Math.floor(newState[5]), Math.floor(newState[6]), Math.floor(newState[7]), Math.floor(newState[8])]);
         setMotorCommandValues(`Motor command values: ${newState}`);
       }
     }, 200);

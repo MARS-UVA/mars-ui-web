@@ -15,6 +15,9 @@ let blChainPower = 100;
 let blChainDirection = 0;
 let stepsAwayFromNeutral = 10;
 let restVal = 100;
+let cameraServoAngle = 0;
+let irServoAngle = 0;
+
 const MAX_POWER = 200;
 const NEUTRAL_POWER = 100;
 const NEUTRAL_THRESHOLD = 10;
@@ -55,9 +58,9 @@ function formatGamepadState(axes, buttons) {
   let leftTrigger = axes[5];
 
 
-  //  btA = buttonValueArray[0];
+  let btA = buttonValueArray[0];
   let btB = buttonValueArray[1];
-  // let btX = buttonValueArray[2];
+  let btX = buttonValueArray[2];
   let btY = buttonValueArray[3];
   let btLB = buttonValueArray[4];
   let btRB = buttonValueArray[5];
@@ -71,8 +74,8 @@ function formatGamepadState(axes, buttons) {
   // let rightStickClick = buttonValueArray[11];
   let dPadUp = buttonValueArray[12];
   let dPadDown = buttonValueArray[13];
-  // let dPadLeft = buttonValueArray[14];
-  // let dPadRight = buttonValueArray[15];
+  let dPadLeft = buttonValueArray[14];
+  let dPadRight = buttonValueArray[15];
 
   //mode switches 12-15 buttons and axes 0-1 between dpad and left stick, we want the mode where the light is off
   let driveForward = rightStickY;
@@ -83,7 +86,8 @@ function formatGamepadState(axes, buttons) {
   // processBucketRotation(btLB, btRB, leftTrigger, rightTrigger, 100);
   processBucketRotation(btLB, btRB, btLT, btRT, dPadUp, dPadDown, 100);
   processBinAngle(btY, btB);
-  //processWebcamServo()
+  processCameraServoAngle(dPadLeft, dPadRight);
+  processIrServoAngle(btX, btA);
 
   return [driveLeft(driveForward, reverseDirectionMultiplier*driveTurn, 1), // front left wheel
           driveRight(driveForward, reverseDirectionMultiplier*driveTurn, 1), // front right wheel
@@ -92,8 +96,8 @@ function formatGamepadState(axes, buttons) {
           ladderRaisePower,
           blChainPower,
           binPower,
-          0, // webcam servo
-          0 //ir servo
+          cameraServoAngle,
+          irServoAngle
         ]
 }
 
@@ -113,6 +117,41 @@ function processBinAngle(btY, btB) {
   else {
     binPower = 100;
     console.log('neutral');
+  }
+}
+
+function processCameraServoAngle(dPadLeft, dPadRight) {
+  if(dPadLeft !== 0 & dPadRight === 0) {
+    cameraServoAngle += 10;
+  }
+
+  else if (dPadLeft === 0 & dPadRight !== 0) {
+    cameraServoAngle -= 10;
+  } 
+
+  if(cameraServoAngle < 0) {
+    cameraServoAngle = 0;
+  }
+  
+  if(cameraServoAngle > 270) {
+    cameraServoAngle = 270;
+  }
+}
+
+function processIrServoAngle(btX, btA) {
+  if (btX) {
+    irServoAngle += 5;
+  }
+  else if (btA) {
+    irServoAngle -= 5;
+  }
+  
+  if(irServoAngle < 0) {
+    irServoAngle = 0;
+  }
+  
+  if(irServoAngle > 90) {
+    irServoAngle = 90;
   }
 }
 

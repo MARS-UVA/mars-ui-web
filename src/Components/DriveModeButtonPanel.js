@@ -161,13 +161,16 @@ function processIrServoAngle(btX, btA) {
 
 function processBucketRotation(LB_val, RB_val, LT_val, RT_val, DP_up, DP_down, neutral_val) {
   
-  let left_button_pressed = LB_val === 1;
-  let right_button_pressed = RB_val === 1;
+  // let left_button_pressed = LB_val === 1;
+  // let right_button_pressed = RB_val === 1;
+
+  // console.log("rt:". RT_val, "lt:", LT_val);
+
   // toggle on/off the "locking" of the chain speed
-  if ((left_button_pressed || right_button_pressed) && !(left_button_pressed && right_button_pressed)) {
-    isChainDirectionLocked = !isChainDirectionLocked;
-    // console.log(isChainSpeedLocked);
-  } 
+  // if ((left_button_pressed || right_button_pressed) && !(left_button_pressed && right_button_pressed)) {
+  //   isChainDirectionLocked = !isChainDirectionLocked;
+    console.log(isChainDirectionLocked);
+  // } 
 
   // if the chain direction is allowed to change, update it
   if(!isChainDirectionLocked) {
@@ -237,7 +240,7 @@ export default function DriveModeButtonPanel() {
   const [gamepadConnectedText, setGamepadConnectedText] = useState("No gamepad connected!");
   const gamepadState = useRef(null);
   const [motorCommandValues, setMotorCommandValues] = useState("No motor commands yet sent.");
-
+  const [chainLocked, setChainLocked] = useState(false);
 
   // Inspired by https://dev.to/xtrp/a-complete-guide-to-the-html5-gamepad-api-2k
   window.addEventListener("gamepadconnected", (e) => {
@@ -319,6 +322,11 @@ export default function DriveModeButtonPanel() {
     }); 
   }
 
+  function toggleBucketLadderChainLocked(){
+    isChainDirectionLocked = !isChainDirectionLocked;
+    setChainLocked(isChainDirectionLocked);
+  }
+
   return (
     <div>
       <Typography variant="body2">Drive Mode:</Typography>
@@ -333,6 +341,7 @@ export default function DriveModeButtonPanel() {
       </ToggleButtonGroup>
 
       <Button sx={{ml:5}} variant="contained" size="large" color="error" onClick={()=>handleESTOP()}>ESTOP</Button>
+      <Button sx={{ml:5}} variant="contained" size="large" onClick={()=>toggleBucketLadderChainLocked()}>{chainLocked ? 'Unlock Bucket Ladder Chain' : 'Lock Bucket Ladder Chain'}</Button>
       <br/>
       <small>{gamepadConnectedText}</small>
       <br/>

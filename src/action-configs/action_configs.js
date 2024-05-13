@@ -40,15 +40,15 @@ export { digConfig };
 var dumpConfig = "{ \
     \"name\": \"dump\", \
     \"update_delay\": 0.2, \
-    \"forward_duration\": 10, \
-    \"forward_speed\": 10, \
-    \"backward_duration\": 10, \
-    \"backward_speed\": 10, \
+    \"forward_duration\": 15, \
+    \"forward_speed\": -10, \
+    \"backward_duration\": 0, \
+    \"backward_speed\": -10, \
     \"dump_duration\": 10, \
     \"lower_bin_duration\": 10, \
-    \"lower_bin_speed\": 10, \
+    \"lower_bin_speed\": 50, \
     \"raise_bin_duration\": 10, \
-    \"raise_bin_speed\": 10 \
+    \"raise_bin_speed\": 50 \
 }";
 export { dumpConfig }; 
 

@@ -33,15 +33,15 @@ class FeedbackPanel extends React.Component {
                         <h4>IR Reading</h4>
                         <p>{this.props.irReading.toFixed(3)}</p>
                         <h4>Wheel Currents</h4>
-                        <p>Forward Left: {this.props.forwardLWheelCurrent.toFixed(3)}</p>
-                        <p>Rear Left: {this.props.rearLWheelCurrent.toFixed(3)}</p>
-                        <p>Forward Right: {this.props.forwardRWheelCurrent.toFixed(3)}</p>
-                        <p>Rear Right: {this.props.rearRWheelCurrent.toFixed(3)}</p>
+                        <p>Forward Left: {this.props.forwardLWheelCurrent.toFixed(3)} Average: {this.props.averageForwardLWheelCurrent}</p>
+                        <p>Rear Left: {this.props.rearLWheelCurrent.toFixed(3)} Average: {this.props.averageRearLWheelCurrent}</p>
+                        <p>Forward Right: {this.props.forwardRWheelCurrent.toFixed(3)} Average: {this.props.averageForwardRWheelCurrent}</p>
+                        <p>Rear Right: {this.props.rearRWheelCurrent.toFixed(3)} Average: {this.props.averageRearRWheelCurrent}</p>
                         <h4>Actuator Currents</h4>
                         <p>Bucket Ladder: {this.props.bucketLadderActuatorCurrent.toFixed(3)}</p>
                         <p>Construction Bin: {this.props.constructionBinActuatorCurrent.toFixed(3)}</p>
                         <h4>Chain Current</h4>
-                        <p>{this.props.bucketLadderChainCurrent.toFixed(3)}</p>
+                        <p>{this.props.bucketLadderChainCurrent.toFixed(3)} Average: {this.props.averageBucketLadderChainCurrent}</p>
                     </div>
                     <br></br>
                 </>

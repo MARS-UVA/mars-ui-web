@@ -20,6 +20,13 @@ export default function GraphPanel(){
     const [bucketLadderActuatorCurrent, setBucketLadderActuatorCurrent] = useState(0);
     const [constructionBinActuatorCurrent, setConstructionBinActuatorCurrent] = useState(0);
 
+    const [averageForwardLWheelCurrent, setAverageForwardLWheelCurrent] = useState(0);
+    const [averageRearLWheelCurrent, setAverageRearLWheelCurrent] = useState(0);
+    const [averageForwardRWheelCurrent, setAverageForwardRWheelCurrent] = useState(0);
+    const [averageRearRWheelCurrent, setAverageRearRWheelCurrent] = useState(0);
+
+    const [averageBucketLadderChainCurrent, setAverageBucketLadderChainCurrent] = useState(0);
+
     const [irReading, setIrReading] = useState(0);
 
     const [bucketContact, setBucketContact] = useState(false);
@@ -47,6 +54,13 @@ export default function GraphPanel(){
                 let bucketLadderChainCurrent = message.bucketLadderChainCurrent;
                 let bucketLadderActuatorCurrent = message.bucketLadderActuatorCurrent;
                 let constructionBinActuatorCurrent = message.constructionBinActuatorCurrent;
+
+                let averageForwardLWheelCurrent = message.averageForwardLWheelCurrent;
+                let averageRearLWheelCurrent = message.averageRearLWheelCurrent;
+                let averageForwardRWheelCurrent = message.averageForwardRWheelCurrent;
+                let averageRearRWheelCurrent = message.averageRearRWheelCurrent;
+
+                let averageBucketLadderChainCurrent = message.averageBucketLadderChainCurrent;
                 
                
                 setForwardLWheelCurrent(forwardLWheelCurrent);
@@ -55,9 +69,15 @@ export default function GraphPanel(){
                 setRearRWheelCurrent(rearRWheelCurrent);
 
                 setBucketLadderChainCurrent(bucketLadderChainCurrent);
-
                 setBucketLadderActuatorCurrent(bucketLadderActuatorCurrent);
                 setConstructionBinActuatorCurrent(constructionBinActuatorCurrent);
+
+                setAverageForwardLWheelCurrent(averageForwardLWheelCurrent);
+                setAverageRearLWheelCurrent(averageRearLWheelCurrent);
+                setAverageForwardRWheelCurrent(averageForwardRWheelCurrent);
+                setAverageRearRWheelCurrent(averageRearRWheelCurrent);
+
+                setAverageBucketLadderChainCurrent(averageBucketLadderChainCurrent);
                 
             });
 
@@ -105,9 +125,15 @@ export default function GraphPanel(){
             rearRWheelCurrent={rearRWheelCurrent}
 
             bucketLadderChainCurrent={bucketLadderChainCurrent}
-
             bucketLadderActuatorCurrent={bucketLadderActuatorCurrent} 
             constructionBinActuatorCurrent={constructionBinActuatorCurrent}
+
+            averageForwardLWheelCurrent={averageForwardLWheelCurrent}
+            averageRearLWheelCurrent={averageRearLWheelCurrent}
+            averageForwardRWheelCurrent={averageForwardRWheelCurrent}
+            averageRearRWheelCurrent={averageRearRWheelCurrent}
+
+            averageBucketLadderChainCurrent={averageBucketLadderChainCurrent}
             >
         </FeedbackPanel>;
     }
